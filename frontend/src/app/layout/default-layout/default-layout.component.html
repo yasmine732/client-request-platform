@@ -1,4 +1,4 @@
-<!--sidebar-->
+<!-- Barre latérale -->
 <c-sidebar
   #sidebar1="cSidebar"
   class="d-print-none sidebar sidebar-fixed border-end"
@@ -6,39 +6,85 @@
   id="sidebar1"
   visible
 >
+
+  <!-- Logo ClientFlow -->
   <c-sidebar-header class="border-bottom">
-    <c-sidebar-brand [routerLink]="[]">
-      <svg [class]="{icon: false}" cIcon class="sidebar-brand-full" height="32" name="logo" title="CoreUI Logo"></svg>
-      <svg cIcon class="sidebar-brand-narrow" height="32" name="signet" title="CoreUI Logo"></svg>
+
+    <c-sidebar-brand
+      [routerLink]="['/dashboard']"
+      class="clientflow-brand"
+    >
+
+      <div class="clientflow-logo">
+        CF
+      </div>
+
+      <div class="clientflow-brand-text sidebar-brand-full">
+
+        <span class="clientflow-name">
+          ClientFlow
+        </span>
+
+        <small>
+          Suivi des demandes
+        </small>
+
+      </div>
+
     </c-sidebar-brand>
+
   </c-sidebar-header>
 
-  <ng-scrollbar pointerEventsMethod="scrollbar" visibility="hover">
-    <c-sidebar-nav [navItems]="navItems" dropdownMode="close" compact />
+  <!-- Menu -->
+  <ng-scrollbar
+    pointerEventsMethod="scrollbar"
+    visibility="hover"
+  >
+    <c-sidebar-nav
+      [navItems]="navItems"
+      dropdownMode="close"
+      compact
+    />
   </ng-scrollbar>
 
+  <!-- Bouton pour réduire la barre -->
   @if (!sidebar1.narrow) {
-    <c-sidebar-footer cSidebarToggle="sidebar1" class="border-top d-none d-lg-flex" toggle="unfoldable" style="cursor: pointer;">
-      <button cSidebarToggler aria-label="Toggle sidebar fold"></button>
+    <c-sidebar-footer
+      cSidebarToggle="sidebar1"
+      class="border-top d-none d-lg-flex"
+      toggle="unfoldable"
+      style="cursor: pointer;"
+    >
+      <button
+        cSidebarToggler
+        aria-label="Réduire la barre latérale"
+      ></button>
     </c-sidebar-footer>
   }
+
 </c-sidebar>
 
-<!--main-->
+<!-- Partie principale -->
 <div class="wrapper d-flex flex-column min-vh-100">
-  <!--app-header-->
+
+  <!-- En-tête -->
   <app-default-header
     [cShadowOnScroll]="'sm'"
     class="mb-4 d-print-none header header-sticky p-0 shadow-sm"
     position="sticky"
     sidebarId="sidebar1"
   />
-  <!--app-body-->
+
+  <!-- Contenu des pages -->
   <div class="body flex-grow-1">
-    <c-container breakpoint="lg" class="h-auto px-4">
+
+    <c-container
+      breakpoint="lg"
+      class="h-auto px-4"
+    >
       <router-outlet />
     </c-container>
+
   </div>
-  <!--app footer-->
-  <app-default-footer />
+
 </div>
