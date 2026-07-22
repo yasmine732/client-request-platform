@@ -1,0 +1,34 @@
+name: Deploy to Firebase Hosting on merge
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install and build
+        run: npm ci && npm run build
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ANGULAR_TAILWINDCSS_TEMPLATE }}
+
+      - name: Deploy to Firebase Hosting
+        run: |
+          OUTPUT=$(npx firebase-tools@latest deploy --only hosting --project angular-tailwindcss-template --non-interactive 2>&1)
+          DEPLOY_EXIT=$?
+          echo "$OUTPUT"
+          if [ $DEPLOY_EXIT -ne 0 ]; then
+            echo "$OUTPUT" | grep -q "is the current active version" || exit $DEPLOY_EXIT
+            echo "Skipping: already the current active version."
+          fi
