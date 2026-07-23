@@ -1,0 +1,492 @@
+<div class="users-page">
+
+  <section class="page-header">
+    <div>
+      <span class="page-label">
+        Administration
+      </span>
+
+      <h1>Gestion des utilisateurs</h1>
+
+      <p>
+        Gérez les comptes administrateurs et agents
+        de la plateforme.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="primary-button"
+      (click)="ouvrirFormulaireAjout()"
+    >
+      <i class="ti ti-user-plus"></i>
+      Ajouter un utilisateur
+    </button>
+  </section>
+
+  <section class="statistics-grid">
+
+    <article class="statistic-card">
+      <div class="statistic-icon purple">
+        <i class="ti ti-users"></i>
+      </div>
+
+      <div>
+        <span>Total utilisateurs</span>
+        <strong>{{ nombreUtilisateurs }}</strong>
+      </div>
+    </article>
+
+    <article class="statistic-card">
+      <div class="statistic-icon green">
+        <i class="ti ti-user-check"></i>
+      </div>
+
+      <div>
+        <span>Comptes actifs</span>
+        <strong>
+          {{ nombreUtilisateursActifs }}
+        </strong>
+      </div>
+    </article>
+
+    <article class="statistic-card">
+      <div class="statistic-icon blue">
+        <i class="ti ti-briefcase"></i>
+      </div>
+
+      <div>
+        <span>Agents</span>
+        <strong>{{ nombreAgents }}</strong>
+      </div>
+    </article>
+
+  </section>
+
+  <div
+    *ngIf="erreur"
+    class="alert-box error-alert"
+  >
+    <i class="ti ti-alert-circle"></i>
+    <span>{{ erreur }}</span>
+  </div>
+
+  <div
+    *ngIf="succes"
+    class="alert-box success-alert"
+  >
+    <i class="ti ti-circle-check"></i>
+    <span>{{ succes }}</span>
+  </div>
+
+  <section
+    *ngIf="formulaireVisible"
+    class="content-card form-card"
+  >
+
+    <div class="card-header">
+      <div>
+        <h2>
+          {{
+            modeEdition
+              ? 'Modifier l’utilisateur'
+              : 'Ajouter un utilisateur'
+          }}
+        </h2>
+
+        <p>
+          {{
+            modeEdition
+              ? 'Modifiez les informations du compte.'
+              : 'Complétez les informations du nouveau compte.'
+          }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="close-button"
+        (click)="fermerFormulaire()"
+      >
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+
+    <form
+      [formGroup]="formulaire"
+      (ngSubmit)="enregistrerUtilisateur()"
+    >
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="prenom">Prénom</label>
+
+          <input
+            id="prenom"
+            type="text"
+            formControlName="prenom"
+            placeholder="Exemple : Sami"
+          />
+
+          <small
+            *ngIf="
+              formulaire.controls.prenom.touched
+              &&
+              formulaire.controls.prenom.invalid
+            "
+          >
+            Le prénom est obligatoire.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="nom">Nom</label>
+
+          <input
+            id="nom"
+            type="text"
+            formControlName="nom"
+            placeholder="Exemple : Trabelsi"
+          />
+
+          <small
+            *ngIf="
+              formulaire.controls.nom.touched
+              &&
+              formulaire.controls.nom.invalid
+            "
+          >
+            Le nom est obligatoire.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="email">
+            Adresse email
+          </label>
+
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="nom@entreprise.com"
+          />
+
+          <small
+            *ngIf="
+              formulaire.controls.email.touched
+              &&
+              formulaire.controls.email.invalid
+            "
+          >
+            Saisissez une adresse email valide.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="motDePasse">
+            {{
+              modeEdition
+                ? 'Nouveau mot de passe'
+                : 'Mot de passe'
+            }}
+          </label>
+
+          <input
+            id="motDePasse"
+            type="password"
+            formControlName="motDePasse"
+            placeholder="Minimum 8 caractères"
+          />
+
+          <span
+            *ngIf="modeEdition"
+            class="field-information"
+          >
+            Laissez vide pour conserver
+            l’ancien mot de passe.
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="role">Rôle</label>
+
+          <select
+            id="role"
+            formControlName="role"
+          >
+            <option value="ADMIN">
+              Administrateur
+            </option>
+
+            <option value="AGENT">
+              Agent
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group account-state">
+          <label>État du compte</label>
+
+          <label class="checkbox-line">
+            <input
+              type="checkbox"
+              formControlName="actif"
+            />
+
+            <span>Compte actif</span>
+          </label>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="button"
+          class="secondary-button"
+          (click)="fermerFormulaire()"
+        >
+          Annuler
+        </button>
+
+        <button
+          type="submit"
+          class="primary-button"
+          [disabled]="enregistrement"
+        >
+          <i class="ti ti-device-floppy"></i>
+
+          {{
+            enregistrement
+              ? 'Enregistrement...'
+              : modeEdition
+                ? 'Enregistrer'
+                : 'Ajouter'
+          }}
+        </button>
+      </div>
+
+    </form>
+
+  </section>
+
+  <section class="content-card users-card">
+
+    <div class="card-header list-header">
+      <div>
+        <h2>Liste des utilisateurs</h2>
+
+        <p>
+          {{ utilisateursFiltres.length }}
+          utilisateur(s) affiché(s)
+        </p>
+      </div>
+
+      <div class="search-box">
+        <i class="ti ti-search"></i>
+
+        <input
+          type="text"
+          [(ngModel)]="recherche"
+          placeholder="Rechercher..."
+        />
+      </div>
+    </div>
+
+    <div
+      *ngIf="chargement"
+      class="loading-container"
+    >
+      <div class="loading-spinner"></div>
+
+      <p>Chargement des utilisateurs...</p>
+    </div>
+
+    <div
+      *ngIf="!chargement"
+      class="table-container"
+    >
+
+      <table class="users-table">
+
+        <thead>
+          <tr>
+            <th>Utilisateur</th>
+            <th>Email</th>
+            <th>Rôle</th>
+            <th>État</th>
+            <th>Date de création</th>
+            <th class="center-column">
+              Actions
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr
+            *ngFor="
+              let utilisateur
+              of utilisateursFiltres
+            "
+          >
+
+            <td>
+              <div class="user-information">
+
+                <div class="user-avatar">
+                  {{
+                    obtenirInitiales(
+                      utilisateur
+                    )
+                  }}
+                </div>
+
+                <div>
+                  <strong>
+                    {{ utilisateur.prenom }}
+                    {{ utilisateur.nom }}
+                  </strong>
+
+                  <span>
+                    ID #{{ utilisateur.id }}
+                  </span>
+                </div>
+
+              </div>
+            </td>
+
+            <td>{{ utilisateur.email }}</td>
+
+            <td>
+              <span
+                class="role-badge"
+                [class.admin-badge]="
+                  utilisateur.role === 'ADMIN'
+                "
+                [class.agent-badge]="
+                  utilisateur.role === 'AGENT'
+                "
+              >
+                {{
+                  utilisateur.role === 'ADMIN'
+                    ? 'Administrateur'
+                    : 'Agent'
+                }}
+              </span>
+            </td>
+
+            <td>
+              <span
+                class="status-badge"
+                [class.active-badge]="
+                  utilisateur.actif
+                "
+                [class.inactive-badge]="
+                  !utilisateur.actif
+                "
+              >
+                <span class="status-dot"></span>
+
+                {{
+                  utilisateur.actif
+                    ? 'Actif'
+                    : 'Inactif'
+                }}
+              </span>
+            </td>
+
+            <td>
+              {{
+                utilisateur.dateCreation
+                  | date:'dd/MM/yyyy HH:mm'
+              }}
+            </td>
+
+            <td>
+              <div class="action-buttons">
+
+                <button
+                  type="button"
+                  class="icon-button edit-button"
+                  title="Modifier"
+                  (click)="
+                    ouvrirFormulaireModification(
+                      utilisateur
+                    )
+                  "
+                >
+                  <i class="ti ti-edit"></i>
+                </button>
+
+                <button
+                  type="button"
+                  class="icon-button state-button"
+                  [title]="
+                    utilisateur.actif
+                      ? 'Désactiver'
+                      : 'Activer'
+                  "
+                  (click)="changerEtat(utilisateur)"
+                >
+                  <i
+                    class="ti"
+                    [class.ti-user-off]="
+                      utilisateur.actif
+                    "
+                    [class.ti-user-check]="
+                      !utilisateur.actif
+                    "
+                  ></i>
+                </button>
+
+                <button
+                  type="button"
+                  class="icon-button delete-button"
+                  title="Supprimer"
+                  (click)="
+                    supprimerUtilisateur(
+                      utilisateur
+                    )
+                  "
+                >
+                  <i class="ti ti-trash"></i>
+                </button>
+
+              </div>
+            </td>
+
+          </tr>
+
+          <tr
+            *ngIf="
+              utilisateursFiltres.length === 0
+            "
+          >
+            <td
+              colspan="6"
+              class="empty-message"
+            >
+              <i class="ti ti-users-off"></i>
+
+              <strong>
+                Aucun utilisateur trouvé
+              </strong>
+
+              <span>
+                Ajoutez un utilisateur ou modifiez
+                votre recherche.
+              </span>
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+</div>
