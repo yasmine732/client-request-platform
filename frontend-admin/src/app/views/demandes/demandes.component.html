@@ -1,0 +1,589 @@
+<div class="page-demandes">
+
+  <!-- En-tête -->
+  <section class="hero-card">
+    <div>
+      <p class="section-label">
+        GESTION COMMERCIALE
+      </p>
+
+      <h1>Gestion des demandes</h1>
+
+      <p class="subtitle">
+        Suivez et traitez les demandes envoyées par les clients.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn-primary"
+      (click)="ouvrirAjout()"
+    >
+      + Ajouter une demande
+    </button>
+  </section>
+
+  <!-- Statistiques -->
+  <section class="stats-grid">
+
+    <article class="stat-card">
+      <div class="stat-icon">
+        D
+      </div>
+
+      <div>
+        <p>Total demandes</p>
+        <strong>
+          {{ demandes.length }}
+        </strong>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-icon">
+        N
+      </div>
+
+      <div>
+        <p>Nouvelles demandes</p>
+        <strong>
+          {{ nombreDemandesNouvelles() }}
+        </strong>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- Message de succès -->
+  <div
+    *ngIf="messageSucces"
+    class="alert alert-success"
+  >
+    {{ messageSucces }}
+  </div>
+
+  <!-- Message d'erreur général -->
+  <div
+    *ngIf="messageErreur"
+    class="alert alert-error"
+  >
+    {{ messageErreur }}
+  </div>
+
+  <!-- Formulaire -->
+  <section
+    *ngIf="formulaireVisible"
+    class="form-card"
+  >
+    <div class="form-header">
+      <div>
+        <p class="section-label">
+          FORMULAIRE
+        </p>
+
+        <h2>
+          {{
+            modeModification
+              ? 'Modifier la demande'
+              : 'Ajouter une demande'
+          }}
+        </h2>
+
+        <p class="required-information">
+          Les champs avec * sont obligatoires.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn-close"
+        (click)="fermerFormulaire()"
+      >
+        ×
+      </button>
+    </div>
+
+    <form
+      #demandeForm="ngForm"
+      class="demande-form"
+      novalidate
+    >
+      <div class="form-grid">
+
+        <!-- Client -->
+        <div class="form-group">
+          <label for="client">
+            Client *
+          </label>
+
+          <select
+            id="client"
+            name="client"
+            [(ngModel)]="formulaire.clientId"
+            #clientChamp="ngModel"
+            [class.input-error]="
+              (clientChamp.touched || soumissionEffectuee) &&
+              formulaire.clientId === null
+            "
+            (ngModelChange)="effacerMessageErreur()"
+            required
+          >
+            <option [ngValue]="null">
+              Sélectionner un client
+            </option>
+
+            <option
+              *ngFor="let client of clients"
+              [ngValue]="client.id"
+            >
+              {{ nomClient(client) }}
+            </option>
+          </select>
+
+          <small
+            class="field-error"
+            *ngIf="
+              (clientChamp.touched || soumissionEffectuee) &&
+              formulaire.clientId === null
+            "
+          >
+            Vous devez sélectionner un client.
+          </small>
+        </div>
+
+        <!-- Titre -->
+        <div class="form-group">
+          <label for="titre">
+            Titre *
+          </label>
+
+          <input
+            id="titre"
+            name="titre"
+            type="text"
+            [(ngModel)]="formulaire.titre"
+            #titreChamp="ngModel"
+            maxlength="150"
+            [class.input-error]="
+              (titreChamp.dirty ||
+               titreChamp.touched ||
+               soumissionEffectuee) &&
+              (
+                titreVide() ||
+                titreTropCourt() ||
+                titreTropLong()
+              )
+            "
+            (ngModelChange)="effacerMessageErreur()"
+            placeholder="Exemple : Carte bancaire bloquée"
+            required
+          />
+
+          <small
+            class="field-error"
+            *ngIf="
+              (titreChamp.dirty ||
+               titreChamp.touched ||
+               soumissionEffectuee) &&
+              titreVide()
+            "
+          >
+            Le titre est obligatoire.
+          </small>
+
+          <small
+            class="field-error"
+            *ngIf="
+              (titreChamp.dirty ||
+               titreChamp.touched ||
+               soumissionEffectuee) &&
+              titreTropCourt()
+            "
+          >
+            Le titre doit contenir au moins 3 caractères.
+          </small>
+
+          <small
+            class="field-error"
+            *ngIf="
+              (titreChamp.dirty ||
+               titreChamp.touched ||
+               soumissionEffectuee) &&
+              titreTropLong()
+            "
+          >
+            Le titre ne doit pas dépasser 150 caractères.
+          </small>
+
+          <small class="character-counter">
+            {{ formulaire.titre.length }}/150 caractères
+          </small>
+        </div>
+
+        <!-- Catégorie -->
+        <div class="form-group">
+          <label for="categorie">
+            Catégorie *
+          </label>
+
+          <input
+            id="categorie"
+            name="categorie"
+            type="text"
+            [(ngModel)]="formulaire.categorie"
+            #categorieChamp="ngModel"
+            maxlength="100"
+            [class.input-error]="
+              (categorieChamp.dirty ||
+               categorieChamp.touched ||
+               soumissionEffectuee) &&
+              (
+                categorieVide() ||
+                categorieTropCourte() ||
+                categorieTropLongue()
+              )
+            "
+            (ngModelChange)="effacerMessageErreur()"
+            placeholder="Exemple : Carte bancaire"
+            required
+          />
+
+          <small
+            class="field-error"
+            *ngIf="
+              (categorieChamp.dirty ||
+               categorieChamp.touched ||
+               soumissionEffectuee) &&
+              categorieVide()
+            "
+          >
+            La catégorie est obligatoire.
+          </small>
+
+          <small
+            class="field-error"
+            *ngIf="
+              (categorieChamp.dirty ||
+               categorieChamp.touched ||
+               soumissionEffectuee) &&
+              categorieTropCourte()
+            "
+          >
+            La catégorie doit contenir au moins 2 caractères.
+          </small>
+
+          <small
+            class="field-error"
+            *ngIf="
+              (categorieChamp.dirty ||
+               categorieChamp.touched ||
+               soumissionEffectuee) &&
+              categorieTropLongue()
+            "
+          >
+            La catégorie ne doit pas dépasser 100 caractères.
+          </small>
+
+          <small class="character-counter">
+            {{ formulaire.categorie.length }}/100 caractères
+          </small>
+        </div>
+
+        <!-- Priorité -->
+        <div class="form-group">
+          <label for="priorite">
+            Priorité *
+          </label>
+
+          <select
+            id="priorite"
+            name="priorite"
+            [(ngModel)]="formulaire.priorite"
+            (ngModelChange)="effacerMessageErreur()"
+            required
+          >
+            <option
+              *ngFor="let priorite of priorites"
+              [ngValue]="priorite"
+            >
+              {{ afficherValeurEnum(priorite) }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Statut -->
+        <div class="form-group">
+          <label for="statut">
+            Statut *
+          </label>
+
+          <select
+            id="statut"
+            name="statut"
+            [(ngModel)]="formulaire.statut"
+            (ngModelChange)="effacerMessageErreur()"
+            required
+          >
+            <option
+              *ngFor="let statut of statuts"
+              [ngValue]="statut"
+            >
+              {{ afficherValeurEnum(statut) }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group full-width">
+          <label for="description">
+            Description *
+          </label>
+
+          <textarea
+            id="description"
+            name="description"
+            rows="5"
+            [(ngModel)]="formulaire.description"
+            #descriptionChamp="ngModel"
+            maxlength="2000"
+            [class.input-error]="
+              (descriptionChamp.dirty ||
+               descriptionChamp.touched ||
+               soumissionEffectuee) &&
+              (
+                descriptionVide() ||
+                descriptionTropCourte() ||
+                descriptionTropLongue()
+              )
+            "
+            (ngModelChange)="effacerMessageErreur()"
+            placeholder="Décrivez le problème du client..."
+            required
+          ></textarea>
+
+          <small
+            class="field-error"
+            *ngIf="
+              (descriptionChamp.dirty ||
+               descriptionChamp.touched ||
+               soumissionEffectuee) &&
+              descriptionVide()
+            "
+          >
+            La description est obligatoire.
+          </small>
+
+          <small
+            class="field-error"
+            *ngIf="
+              (descriptionChamp.dirty ||
+               descriptionChamp.touched ||
+               soumissionEffectuee) &&
+              descriptionTropCourte()
+            "
+          >
+            La description doit contenir au moins 10 caractères.
+          </small>
+
+          <small
+            class="field-error"
+            *ngIf="
+              (descriptionChamp.dirty ||
+               descriptionChamp.touched ||
+               soumissionEffectuee) &&
+              descriptionTropLongue()
+            "
+          >
+            La description ne doit pas dépasser 2000 caractères.
+          </small>
+
+          <small class="character-counter">
+            {{ formulaire.description.length }}/2000 caractères
+          </small>
+        </div>
+
+      </div>
+
+      <!-- Boutons du formulaire -->
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="fermerFormulaire()"
+        >
+          Annuler
+        </button>
+
+        <!-- Le clic appelle directement la méthode -->
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="enregistrerDemande(demandeForm)"
+        >
+          {{
+            modeModification
+              ? 'Enregistrer les modifications'
+              : 'Ajouter la demande'
+          }}
+        </button>
+
+      </div>
+    </form>
+  </section>
+
+  <!-- Liste -->
+  <section class="list-card">
+
+    <div class="list-header">
+      <div>
+        <h2>Liste des demandes</h2>
+
+        <p>
+          {{ demandesFiltrees.length }}
+          demande(s) affichée(s)
+        </p>
+      </div>
+
+      <div class="search-box">
+        <input
+          type="search"
+          [(ngModel)]="recherche"
+          (ngModelChange)="filtrerDemandes()"
+          placeholder="Rechercher une demande..."
+        />
+      </div>
+    </div>
+
+    <div
+      *ngIf="chargement"
+      class="empty-state"
+    >
+      Chargement des demandes...
+    </div>
+
+    <div
+      *ngIf="
+        !chargement &&
+        demandesFiltrees.length === 0
+      "
+      class="empty-state"
+    >
+      Aucune demande trouvée.
+    </div>
+
+    <div
+      *ngIf="
+        !chargement &&
+        demandesFiltrees.length > 0
+      "
+      class="table-container"
+    >
+      <table>
+        <thead>
+          <tr>
+            <th>Référence</th>
+            <th>Demande</th>
+            <th>Client</th>
+            <th>Catégorie</th>
+            <th>Priorité</th>
+            <th>Statut</th>
+            <th>Agent</th>
+            <th>Date</th>
+            <th class="actions-column">
+              Actions
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let demande of demandesFiltrees">
+
+            <td>
+              <strong class="reference">
+                {{
+                  demande.referenceDemande ||
+                  'Sans référence'
+                }}
+              </strong>
+            </td>
+
+            <td>
+              <div class="demande-title">
+                {{ demande.titre }}
+              </div>
+
+              <div class="demande-description">
+                {{ demande.description }}
+              </div>
+            </td>
+
+            <td>
+              {{ nomClient(demande.client) }}
+            </td>
+
+            <td>
+              {{ demande.categorie }}
+            </td>
+
+            <td>
+              <span
+                class="badge"
+                [ngClass]="
+                  'priority-' +
+                  demande.priorite.toLowerCase()
+                "
+              >
+                {{ afficherValeurEnum(demande.priorite) }}
+              </span>
+            </td>
+
+            <td>
+              <span
+                class="badge"
+                [ngClass]="
+                  'status-' +
+                  demande.statut.toLowerCase()
+                "
+              >
+                {{ afficherValeurEnum(demande.statut) }}
+              </span>
+            </td>
+
+            <td>
+              {{ nomAgent(demande) }}
+            </td>
+
+            <td>
+              {{
+                demande.dateCreation
+                  | date: 'dd/MM/yyyy HH:mm'
+              }}
+            </td>
+
+            <td class="actions">
+              <button
+                type="button"
+                class="btn-edit"
+                (click)="ouvrirModification(demande)"
+              >
+                Modifier
+              </button>
+
+              <button
+                type="button"
+                class="btn-delete"
+                (click)="supprimerDemande(demande)"
+              >
+                Supprimer
+              </button>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+</div>

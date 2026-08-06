@@ -1,7 +1,11 @@
 export interface NavigationItem {
   id: string;
   title: string;
-  type: 'item' | 'collapse' | 'group';
+  type:
+    | 'item'
+    | 'collapse'
+    | 'group';
+
   translate?: string;
   icon?: string;
   hidden?: boolean;
@@ -21,6 +25,7 @@ export const NavigationItems: NavigationItem[] = [
     title: 'Tableau de bord',
     type: 'group',
     icon: 'icon-navigation',
+
     children: [
       {
         id: 'dashboard',
@@ -33,11 +38,13 @@ export const NavigationItems: NavigationItem[] = [
       }
     ]
   },
+
   {
     id: 'gestion-group',
     title: 'Gestion',
     type: 'group',
     icon: 'icon-navigation',
+
     children: [
       {
         id: 'users',
@@ -46,6 +53,26 @@ export const NavigationItems: NavigationItem[] = [
         classes: 'nav-item',
         url: '/users',
         icon: 'ti ti-users',
+        breadcrumbs: false
+      },
+
+      {
+        id: 'clients',
+        title: 'Clients',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/clients',
+        icon: 'ti ti-address-book',
+        breadcrumbs: false
+      },
+
+      {
+        id: 'demandes',
+        title: 'Demandes',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/demandes',
+        icon: 'ti ti-file-description',
         breadcrumbs: false
       }
     ]

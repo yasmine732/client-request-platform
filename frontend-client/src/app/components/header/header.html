@@ -1,126 +1,134 @@
-<header class="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50">
-  <nav class="container mx-auto px-4 py-4">
-    <div class="flex justify-between items-center">
-      <!-- Logo -->
-      <a routerLink="/" class="flex items-center space-x-2">
-        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-          <span class="text-white font-bold text-xl">A</span>
-        </div>
-        <span class="text-xl font-bold text-gray-900 dark:text-white">
-          AngularTailwind
-        </span>
+<header
+  class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur-xl"
+>
+  <nav
+    class="mx-auto flex min-h-[78px] max-w-7xl items-center justify-between gap-6 px-5 lg:px-8"
+  >
+    <!-- Logo ClientFlow -->
+    <a
+      routerLink="/"
+      (click)="closeMenu()"
+      class="clientflow-logo-link"
+      aria-label="Retour à l'accueil ClientFlow"
+    >
+      <img
+        src="clientflow-logo.png"
+        alt="Logo ClientFlow"
+        class="clientflow-logo"
+      />
+    </a>
+
+    <!-- Navigation ordinateur -->
+    <ul class="hidden items-center gap-8 lg:flex">
+      @for (link of navLinks; track link.path) {
+        <li>
+          <a
+            [routerLink]="link.path"
+            routerLinkActive="text-indigo-600"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="relative py-7 text-sm font-semibold text-slate-600 transition-colors hover:text-indigo-600"
+          >
+            {{ link.label }}
+          </a>
+        </li>
+      }
+    </ul>
+
+    <!-- Boutons ordinateur -->
+    <div class="hidden items-center gap-3 lg:flex">
+      <a
+        routerLink="/login"
+        class="rounded-xl border border-indigo-100 px-5 py-2.5 text-sm font-semibold text-indigo-600 transition hover:border-indigo-200 hover:bg-indigo-50"
+      >
+        Se connecter
       </a>
 
-      <!-- Desktop Navigation -->
-      <ul class="hidden md:flex items-center space-x-8">
+      <a
+        routerLink="/register"
+        class="rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 hover:shadow-xl"
+      >
+        Créer un compte
+      </a>
+    </div>
+
+    <!-- Bouton du menu mobile -->
+    <button
+      type="button"
+      (click)="toggleMenu()"
+      [attr.aria-expanded]="isMenuOpen"
+      aria-label="Ouvrir ou fermer le menu"
+      class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 lg:hidden"
+    >
+      @if (isMenuOpen) {
+        <svg
+          class="h-6 w-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18 18 6M6 6l12 12"
+          />
+        </svg>
+      } @else {
+        <svg
+          class="h-6 w-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+      }
+    </button>
+  </nav>
+
+  <!-- Menu mobile -->
+  @if (isMenuOpen) {
+    <div class="border-t border-slate-100 bg-white px-5 py-5 lg:hidden">
+      <ul class="space-y-2">
         @for (link of navLinks; track link.path) {
           <li>
             <a
               [routerLink]="link.path"
-              routerLinkActive="text-blue-600 dark:text-blue-400"
-              [routerLinkActiveOptions]="{exact: true}"
-              class="font-medium transition-colors text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+              routerLinkActive="bg-indigo-50 text-indigo-600"
+              [routerLinkActiveOptions]="{ exact: true }"
+              (click)="closeMenu()"
+              class="block rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-indigo-50 hover:text-indigo-600"
             >
-              {{link.label}}
+              {{ link.label }}
             </a>
           </li>
         }
       </ul>
 
-      <!-- GitHub Link & CTA Button -->
-      <div class="hidden md:flex items-center space-x-4">
+      <div class="mt-5 grid gap-3">
         <a
-          href="https://github.com/ishansasika/angular-tailwindcss-template"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-          aria-label="View source on GitHub"
+          routerLink="/login"
+          (click)="closeMenu()"
+          class="rounded-xl border border-indigo-200 px-5 py-3 text-center text-sm font-semibold text-indigo-600"
         >
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-          </svg>
+          Se connecter
         </a>
+
         <a
-          routerLink="/contact"
-          class="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium hover:shadow-lg transition-shadow"
+          routerLink="/register"
+          (click)="closeMenu()"
+          class="rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 text-center text-sm font-semibold text-white"
         >
-          Get Started
+          Créer un compte
         </a>
       </div>
-
-      <!-- Mobile Menu Button -->
-      <button
-        (click)="toggleMenu()"
-        class="md:hidden text-gray-700 dark:text-gray-300"
-        aria-label="Toggle menu"
-      >
-        <svg
-          class="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          @if (isMenuOpen) {
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          } @else {
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          }
-        </svg>
-      </button>
     </div>
-
-    <!-- Mobile Menu -->
-    @if (isMenuOpen) {
-      <div class="md:hidden mt-4 pb-4">
-        <ul class="space-y-4">
-          @for (link of navLinks; track link.path) {
-            <li>
-              <a
-                [routerLink]="link.path"
-                routerLinkActive="text-blue-600 dark:text-blue-400"
-                [routerLinkActiveOptions]="{exact: true}"
-                (click)="closeMenu()"
-                class="block font-medium transition-colors text-gray-700 dark:text-gray-300"
-              >
-                {{link.label}}
-              </a>
-            </li>
-          }
-          <li>
-            <a
-              href="https://github.com/ishansasika/angular-tailwindcss-template"
-              target="_blank"
-              rel="noopener noreferrer"
-              (click)="closeMenu()"
-              class="flex items-center space-x-2 font-medium text-gray-700 dark:text-gray-300"
-            >
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-              </svg>
-              <span>View Source Code</span>
-            </a>
-          </li>
-          <li>
-            <a
-              routerLink="/contact"
-              (click)="closeMenu()"
-              class="block px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium text-center"
-            >
-              Get Started
-            </a>
-          </li>
-        </ul>
-      </div>
-    }
-  </nav>
+  }
 </header>

@@ -1,1 +1,25 @@
-// This file is intentionally left empty to allow customers to add custom CSS if needed.
+.clientflow-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.clientflow-logo {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+}
+
+.clientflow-logo-small {
+  width: 38px;
+  height: 38px;
+}
+
+.clientflow-name {
+  color: #1e293b;
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+}// This file is intentionally left empty to allow customers to add custom CSS if needed.

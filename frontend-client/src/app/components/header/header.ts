@@ -1,28 +1,32 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
+interface NavigationLink {
+  path: string;
+  label: string;
+}
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, RouterLinkActive, CommonModule],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
 export class Header {
   isMenuOpen = false;
 
-  navLinks = [
-    { path: '/', label: 'Home' },
-    { path: '/about', label: 'About' },
+  navLinks: NavigationLink[] = [
+    { path: '/', label: 'Accueil' },
+    { path: '/about', label: 'À propos' },
     { path: '/services', label: 'Services' },
     { path: '/contact', label: 'Contact' },
   ];
 
-  toggleMenu() {
+  toggleMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
   }
 
-  closeMenu() {
+  closeMenu(): void {
     this.isMenuOpen = false;
   }
 }

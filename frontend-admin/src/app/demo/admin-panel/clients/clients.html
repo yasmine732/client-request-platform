@@ -1,0 +1,592 @@
+<div class="clients-page">
+
+  <section class="page-header">
+
+    <div>
+      <span class="page-label">
+        Gestion commerciale
+      </span>
+
+      <h1>Gestion des clients</h1>
+
+      <p>
+        Gérez les particuliers et les entreprises enregistrés dans la plateforme.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="primary-button"
+      (click)="ouvrirFormulaireAjout()"
+    >
+      <i class="ti ti-user-plus"></i>
+      Ajouter un client
+    </button>
+
+  </section>
+
+  <section class="statistics-grid">
+
+    <article class="statistic-card">
+
+      <div class="statistic-icon purple">
+        <i class="ti ti-users"></i>
+      </div>
+
+      <div>
+        <span>Total clients</span>
+        <strong>{{ nombreClients }}</strong>
+      </div>
+
+    </article>
+
+    <article class="statistic-card">
+
+      <div class="statistic-icon green">
+        <i class="ti ti-user-check"></i>
+      </div>
+
+      <div>
+        <span>Clients actifs</span>
+        <strong>{{ nombreClientsActifs }}</strong>
+      </div>
+
+    </article>
+
+    <article class="statistic-card">
+
+      <div class="statistic-icon blue">
+        <i class="ti ti-building"></i>
+      </div>
+
+      <div>
+        <span>Entreprises</span>
+        <strong>{{ nombreEntreprises }}</strong>
+      </div>
+
+    </article>
+
+  </section>
+
+  <div
+    *ngIf="erreur"
+    class="alert-box error-alert"
+  >
+    <i class="ti ti-alert-circle"></i>
+    <span>{{ erreur }}</span>
+  </div>
+
+  <div
+    *ngIf="succes"
+    class="alert-box success-alert"
+  >
+    <i class="ti ti-circle-check"></i>
+    <span>{{ succes }}</span>
+  </div>
+
+  <section
+    *ngIf="formulaireVisible"
+    class="content-card form-card"
+  >
+
+    <div class="card-header">
+
+      <div>
+
+        <h2>
+          {{
+            modeEdition
+              ? 'Modifier le client'
+              : 'Ajouter un client'
+          }}
+        </h2>
+
+        <p>
+          Complétez les informations du client.
+        </p>
+
+      </div>
+
+      <button
+        type="button"
+        class="close-button"
+        title="Fermer"
+        (click)="fermerFormulaire()"
+      >
+        <i class="ti ti-x"></i>
+      </button>
+
+    </div>
+
+    <form
+      [formGroup]="formulaire"
+      (ngSubmit)="enregistrerClient()"
+    >
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label for="typeClient">
+            Type du client
+          </label>
+
+          <select
+            id="typeClient"
+            formControlName="typeClient"
+            (change)="changerTypeClient()"
+          >
+
+            <option value="PARTICULIER">
+              Particulier
+            </option>
+
+            <option value="ENTREPRISE">
+              Entreprise
+            </option>
+
+          </select>
+
+        </div>
+
+        <div
+          *ngIf="typeClientSelectionne === 'PARTICULIER'"
+          class="form-group"
+        >
+
+          <label for="prenom">
+            Prénom
+          </label>
+
+          <input
+            id="prenom"
+            type="text"
+            formControlName="prenom"
+            placeholder="Exemple : Ahmed"
+          />
+
+        </div>
+
+        <div
+          *ngIf="typeClientSelectionne === 'PARTICULIER'"
+          class="form-group"
+        >
+
+          <label for="nom">
+            Nom
+          </label>
+
+          <input
+            id="nom"
+            type="text"
+            formControlName="nom"
+            placeholder="Exemple : Ben Ali"
+          />
+
+        </div>
+
+        <div
+          *ngIf="typeClientSelectionne === 'ENTREPRISE'"
+          class="form-group"
+        >
+
+          <label for="raisonSociale">
+            Raison sociale
+          </label>
+
+          <input
+            id="raisonSociale"
+            type="text"
+            formControlName="raisonSociale"
+            placeholder="Exemple : Société ABC"
+          />
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="email">
+            Adresse email
+          </label>
+
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="client@email.com"
+          />
+
+          <small
+            *ngIf="
+              formulaire.controls.email.touched
+              &&
+              formulaire.controls.email.invalid
+            "
+          >
+            Saisissez une adresse email valide.
+          </small>
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="telephone">
+            Téléphone
+          </label>
+
+          <input
+            id="telephone"
+            type="text"
+            formControlName="telephone"
+            placeholder="+216 22 123 456"
+          />
+
+          <small
+            *ngIf="
+              formulaire.controls.telephone.touched
+              &&
+              formulaire.controls.telephone.hasError('required')
+            "
+          >
+            Le numéro de téléphone est obligatoire.
+          </small>
+
+          <small
+            *ngIf="
+              formulaire.controls.telephone.touched
+              &&
+              formulaire.controls.telephone.hasError('pattern')
+            "
+          >
+            Saisissez un numéro valide, par exemple : +216 22 123 456.
+          </small>
+
+        </div>
+
+        <div class="form-group full-width">
+
+          <label for="adresse">
+            Adresse
+          </label>
+
+          <input
+            id="adresse"
+            type="text"
+            formControlName="adresse"
+            placeholder="Adresse complète du client"
+          />
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            État du client
+          </label>
+
+          <label class="checkbox-line">
+
+            <input
+              type="checkbox"
+              formControlName="actif"
+            />
+
+            <span>
+              Client actif
+            </span>
+
+          </label>
+
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="secondary-button"
+          (click)="fermerFormulaire()"
+        >
+          Annuler
+        </button>
+
+        <button
+          type="submit"
+          class="primary-button"
+          [disabled]="enregistrement"
+        >
+
+          <i class="ti ti-device-floppy"></i>
+
+          {{
+            enregistrement
+              ? 'Enregistrement...'
+              : modeEdition
+                ? 'Enregistrer les modifications'
+                : 'Ajouter le client'
+          }}
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </section>
+
+  <section class="content-card clients-card">
+
+    <div class="card-header list-header">
+
+      <div>
+
+        <h2>
+          Liste des clients
+        </h2>
+
+        <p>
+          {{ clientsAffiches.length }}
+          client(s) affiché(s)
+        </p>
+
+      </div>
+
+      <div class="search-box">
+
+        <i class="ti ti-search"></i>
+
+        <input
+          type="text"
+          [value]="recherche"
+          (input)="rechercherClient($event)"
+          placeholder="Rechercher par nom, prénom, email..."
+        />
+
+        <button
+          *ngIf="recherche"
+          type="button"
+          class="search-clear-button"
+          title="Effacer la recherche"
+          (click)="effacerRecherche()"
+        >
+          <i class="ti ti-x"></i>
+        </button>
+
+      </div>
+
+    </div>
+
+    <div
+      *ngIf="chargement"
+      class="loading-container"
+    >
+
+      <div class="loading-spinner"></div>
+
+      <p>
+        Chargement des clients...
+      </p>
+
+    </div>
+
+    <div
+      *ngIf="!chargement"
+      class="table-container"
+    >
+
+      <table class="clients-table">
+
+        <thead>
+
+          <tr>
+            <th>Client</th>
+            <th>Référence</th>
+            <th>Type</th>
+            <th>Contact</th>
+            <th>État</th>
+            <th>Date de création</th>
+
+            <th class="center-column">
+              Actions
+            </th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr
+            *ngFor="let client of clientsAffiches"
+          >
+
+            <td>
+
+              <div class="client-information">
+
+                <div class="client-avatar">
+                  {{ obtenirInitiales(client) }}
+                </div>
+
+                <div>
+
+                  <strong>
+                    {{ obtenirNomClient(client) }}
+                  </strong>
+
+                  <span>
+                    {{ client.email }}
+                  </span>
+
+                </div>
+
+              </div>
+
+            </td>
+
+            <td>
+              {{ client.referenceClient || '—' }}
+            </td>
+
+            <td>
+
+              <span
+                class="type-badge"
+                [class.particulier-badge]="
+                  client.typeClient === 'PARTICULIER'
+                "
+                [class.entreprise-badge]="
+                  client.typeClient === 'ENTREPRISE'
+                "
+              >
+
+                {{
+                  client.typeClient === 'PARTICULIER'
+                    ? 'Particulier'
+                    : client.typeClient === 'ENTREPRISE'
+                      ? 'Entreprise'
+                      : 'Non défini'
+                }}
+
+              </span>
+
+            </td>
+
+            <td>
+
+              <strong>
+                {{ client.telephone }}
+              </strong>
+
+              <span class="address-text">
+                {{ client.adresse || 'Adresse non renseignée' }}
+              </span>
+
+            </td>
+
+            <td>
+
+              <span
+                class="status-badge"
+                [class.active-badge]="client.actif"
+                [class.inactive-badge]="!client.actif"
+              >
+
+                <span class="status-dot"></span>
+
+                {{
+                  client.actif
+                    ? 'Actif'
+                    : 'Inactif'
+                }}
+
+              </span>
+
+            </td>
+
+            <td>
+              {{
+                client.dateCreation
+                  | date:'dd/MM/yyyy HH:mm'
+              }}
+            </td>
+
+            <td>
+
+              <div class="action-buttons">
+
+                <button
+                  type="button"
+                  class="icon-button edit-button"
+                  title="Modifier"
+                  (click)="ouvrirFormulaireModification(client)"
+                >
+                  <i class="ti ti-edit"></i>
+                </button>
+
+                <button
+                  type="button"
+                  class="icon-button state-button"
+                  [title]="
+                    client.actif
+                      ? 'Désactiver'
+                      : 'Activer'
+                  "
+                  (click)="changerEtat(client)"
+                >
+
+                  <i
+                    class="ti"
+                    [class.ti-user-off]="client.actif"
+                    [class.ti-user-check]="!client.actif"
+                  ></i>
+
+                </button>
+
+                <button
+                  type="button"
+                  class="icon-button delete-button"
+                  title="Supprimer"
+                  (click)="supprimerClient(client)"
+                >
+                  <i class="ti ti-trash"></i>
+                </button>
+
+              </div>
+
+            </td>
+
+          </tr>
+
+          <tr
+            *ngIf="clientsAffiches.length === 0"
+          >
+
+            <td
+              colspan="7"
+              class="empty-message"
+            >
+
+              <i class="ti ti-users-off"></i>
+
+              <strong>
+                Aucun client trouvé
+              </strong>
+
+              <span>
+                Vérifiez le nom saisi dans la recherche.
+              </span>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+</div>

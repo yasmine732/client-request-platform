@@ -12,38 +12,78 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/clients")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
 public class ClientController {
 
     private final ClientService clientService;
 
     @GetMapping
     public List<Client> obtenirTousLesClients() {
-        return clientService.obtenirTousLesClients();
+        return clientService
+                .obtenirTousLesClients();
     }
 
     @GetMapping("/{id}")
-    public Client obtenirClientParId(@PathVariable Long id) {
-        return clientService.obtenirClientParId(id);
+    public Client obtenirClientParId(
+            @PathVariable Long id
+    ) {
+        return clientService
+                .obtenirClientParId(id);
+    }
+
+    @GetMapping("/recherche")
+    public List<Client> rechercherClients(
+            @RequestParam String texte
+    ) {
+        return clientService
+                .rechercherClients(texte);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Client ajouterClient(@Valid @RequestBody Client client) {
-        return clientService.ajouterClient(client);
+    public Client ajouterClient(
+            @Valid
+            @RequestBody
+            Client client
+    ) {
+        return clientService
+                .ajouterClient(client);
     }
 
     @PutMapping("/{id}")
     public Client modifierClient(
             @PathVariable Long id,
-            @Valid @RequestBody Client client
+
+            @Valid
+            @RequestBody
+            Client client
     ) {
-        return clientService.modifierClient(id, client);
+        return clientService
+                .modifierClient(
+                        id,
+                        client
+                );
+    }
+
+    @PatchMapping("/{id}/etat")
+    public Client modifierEtat(
+            @PathVariable Long id,
+            @RequestParam boolean actif
+    ) {
+        return clientService
+                .modifierEtat(
+                        id,
+                        actif
+                );
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void supprimerClient(@PathVariable Long id) {
-        clientService.supprimerClient(id);
+    @ResponseStatus(
+            HttpStatus.NO_CONTENT
+    )
+    public void supprimerClient(
+            @PathVariable Long id
+    ) {
+        clientService
+                .supprimerClient(id);
     }
 }

@@ -1,69 +1,119 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import {
+  NgModule
+} from '@angular/core';
 
-import { AdminComponent } from './theme/layout/admin/admin.component';
-import { GuestComponent } from './theme/layout/guest/guest.component';
+import {
+  RouterModule,
+  Routes
+} from '@angular/router';
+
+import {
+  AdminComponent
+} from './theme/layout/admin/admin.component';
+
+import {
+  GuestComponent
+} from './theme/layout/guest/guest.component';
 
 const appRoutes: Routes = [
   {
     path: '',
     component: AdminComponent,
+
     children: [
       {
         path: '',
         redirectTo: 'default',
         pathMatch: 'full'
       },
+
       {
         path: 'default',
+
         loadComponent: () =>
-          import('./demo/dashboard/default/default.component')
-            .then((component) => component.DefaultComponent)
+          import(
+            './demo/dashboard/default/default.component'
+          )
+            .then(
+              (component) =>
+                component.DefaultComponent
+            )
       },
+
       {
         path: 'users',
+
         loadComponent: () =>
-          import('./demo/admin-panel/users/users')
-            .then((component) => component.Users)
+          import(
+            './demo/admin-panel/users/users'
+          )
+            .then(
+              (component) =>
+                component.Users
+            )
       },
+
       {
-        path: 'typography',
+        path: 'clients',
+
         loadComponent: () =>
-          import('./demo/elements/typography/typography.component')
-            .then((component) => component.TypographyComponent)
+          import(
+            './demo/admin-panel/clients/clients'
+          )
+            .then(
+              (component) =>
+                component.Clients
+            )
       },
+
       {
-        path: 'color',
+        path: 'demandes',
+
         loadComponent: () =>
-          import('./demo/elements/element-color/element-color.component')
-            .then((component) => component.ElementColorComponent)
-      },
-      {
-        path: 'sample-page',
-        loadComponent: () =>
-          import('./demo/other/sample-page/sample-page.component')
-            .then((component) => component.SamplePageComponent)
+          import(
+            './views/demandes/demandes.component'
+          )
+            .then(
+              (component) =>
+                component.DemandesComponent
+            )
       }
     ]
   },
+
   {
     path: '',
     component: GuestComponent,
+
     children: [
       {
         path: 'login',
+
         loadComponent: () =>
-          import('./demo/pages/authentication/login/login.component')
-            .then((component) => component.LoginComponent)
+          import(
+            './demo/pages/authentication/login/login.component'
+          )
+            .then(
+              (component) =>
+                component.LoginComponent
+            )
       },
+
       {
         path: 'register',
+
         loadComponent: () =>
-          import('./demo/pages/authentication/register/register.component')
-            .then((component) => component.RegisterComponent)
+          import(
+            './demo/pages/authentication/register/register.component'
+          )
+            .then(
+              (component) =>
+                component.RegisterComponent
+            )
       }
     ]
   },
+
   {
     path: '**',
     redirectTo: 'default'
@@ -74,6 +124,7 @@ const appRoutes: Routes = [
   imports: [
     RouterModule.forRoot(appRoutes)
   ],
+
   exports: [
     RouterModule
   ]

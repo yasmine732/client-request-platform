@@ -1,16 +1,16 @@
 package com.stb.clientrequest.entity;
 
+import com.stb.clientrequest.enums.TypeClient;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "clients")
@@ -24,46 +24,97 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Le nom est obligatoire")
-    @Size(
-            min = 2,
-            max = 50,
-            message = "Le nom doit contenir entre 2 et 50 caractères"
+    @Column(
+            name = "reference_client",
+            unique = true,
+            length = 30
     )
+    private String referenceClient;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type_client", length = 20)
+    private TypeClient typeClient;
+
+    /*
+     * Ces champs sont utilisés pour un particulier.
+     */
+    @Column(length = 50)
     private String nom;
 
-    @NotBlank(message = "Le prénom est obligatoire")
-    @Size(
-            min = 2,
-            max = 50,
-            message = "Le prénom doit contenir entre 2 et 50 caractères"
-    )
+    @Column(length = 50)
     private String prenom;
 
-    @NotBlank(message = "L'email est obligatoire")
-    @Email(message = "L'adresse email n'est pas valide")
-    @Column(unique = true, nullable = false)
+    /*
+     * Ce champ est utilisé pour une entreprise.
+     */
+    @Column(
+            name = "raison_sociale",
+            length = 150
+    )
+    private String raisonSociale;
+
+    @NotBlank(
+            message = "L’adresse email est obligatoire"
+    )
+    @Email(
+            message = "L’adresse email n’est pas valide"
+    )
+    @Column(
+            nullable = false,
+            unique = true,
+            length = 150
+    )
     private String email;
 
-    @NotBlank(message = "Le téléphone est obligatoire")
-    @Pattern(
-            regexp = "^[0-9]{8,15}$",
-            message = "Le téléphone doit contenir entre 8 et 15 chiffres"
+    @NotBlank(
+            message = "Le numéro de téléphone est obligatoire"
+    )
+    @Column(
+            nullable = false,
+            length = 30
     )
     private String telephone;
 
-    @NotBlank(message = "L'adresse est obligatoire")
-    @Size(
-            min = 3,
-            max = 200,
-            message = "L'adresse doit contenir entre 3 et 200 caractères"
-    )
+    @Column(length = 255)
     private String adresse;
 
+    @Column(nullable = false)
+    private boolean actif = true;
+
+    @Column(
+            name = "date_creation",
+            nullable = false,
+            updatable = false
+    )
     private LocalDateTime dateCreation;
 
+    @Column(name = "date_modification")
+    private LocalDateTime dateModification;
+
     @PrePersist
-    public void avantEnregistrement() {
-        this.dateCreation = LocalDateTime.now();
+    public void avantCreation() {
+        LocalDateTime maintenant =
+                LocalDateTime.now();
+
+        if (
+                referenceClient == null
+                || referenceClient.isBlank()
+        ) {
+            referenceClient =
+                    "CLI-"
+                    + UUID.randomUUID()
+                    .toString()
+                    .substring(0, 8)
+                    .toUpperCase();
+        }
+
+        dateCreation = maintenant;
+        dateModification = maintenant;
+    }
+
+    @PreUpdate
+    public void avantModification() {
+        dateModification =
+                LocalDateTime.now();
     }
 }

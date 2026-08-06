@@ -1,0 +1,14 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+input,
+select,
+button {
+  font-family: inherit;
+}
+
+input[type='checkbox'] {
+  accent-color: #4f46e5;
+}
