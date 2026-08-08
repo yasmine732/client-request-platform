@@ -1,0 +1,512 @@
+<main class="min-h-screen bg-slate-50">
+
+  @if (user) {
+
+    <div class="mx-auto max-w-7xl px-5 py-8 lg:px-8">
+
+      <!-- En-tête -->
+      <div
+        class="mb-8 flex flex-col gap-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div>
+          <p
+            class="text-xs font-bold uppercase tracking-wider text-indigo-600"
+          >
+            Mon espace ClientFlow
+          </p>
+
+          <h1
+            class="mt-2 text-2xl font-black text-slate-900"
+          >
+            Mes demandes
+          </h1>
+
+          <p
+            class="mt-1 text-sm text-slate-500"
+          >
+            {{ user.prenom }}
+            {{ user.nom }}
+            ·
+            {{ user.email }}
+          </p>
+        </div>
+
+        <div
+          class="flex flex-col gap-3 sm:flex-row"
+        >
+
+          <a
+            routerLink="/client/nouvelle-demande"
+            class="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 text-sm font-bold text-white shadow-lg shadow-indigo-200"
+          >
+            <span class="text-lg">
+              +
+            </span>
+
+            Nouvelle demande
+          </a>
+
+          <button
+            type="button"
+            (click)="logout()"
+            class="h-11 rounded-xl border border-slate-200 px-5 text-sm font-bold text-slate-600 transition hover:bg-red-50 hover:text-red-600"
+          >
+            Déconnexion
+          </button>
+
+        </div>
+      </div>
+
+      <div
+        class="grid gap-8 lg:grid-cols-[250px_1fr]"
+      >
+
+        <!-- Menu latéral -->
+        <aside
+          class="h-fit rounded-3xl border border-slate-200 bg-white p-4 shadow-sm"
+        >
+          <p
+            class="mb-3 px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-400"
+          >
+            Navigation
+          </p>
+
+          <a
+            routerLink="/client/dashboard"
+            class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-indigo-50 hover:text-indigo-700"
+          >
+            Tableau de bord
+          </a>
+
+          <a
+            routerLink="/client/mes-demandes"
+            class="mt-2 flex items-center gap-3 rounded-xl bg-indigo-50 px-4 py-3 text-sm font-bold text-indigo-700"
+          >
+            Mes demandes
+          </a>
+
+          <a
+            routerLink="/client/nouvelle-demande"
+            class="mt-2 flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-indigo-50 hover:text-indigo-700"
+          >
+            Nouvelle demande
+          </a>
+        </aside>
+
+        <!-- Contenu -->
+        <section>
+
+          <!-- Statistiques -->
+          <div
+            class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+          >
+
+            <article
+              class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
+            >
+              <p
+                class="text-sm font-semibold text-slate-500"
+              >
+                Total
+              </p>
+
+              <p
+                class="mt-2 text-3xl font-black text-slate-900"
+              >
+                {{ totalDemandes }}
+              </p>
+            </article>
+
+            <article
+              class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
+            >
+              <p
+                class="text-sm font-semibold text-blue-600"
+              >
+                Nouvelles
+              </p>
+
+              <p
+                class="mt-2 text-3xl font-black text-slate-900"
+              >
+                {{ nouvelles }}
+              </p>
+            </article>
+
+            <article
+              class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
+            >
+              <p
+                class="text-sm font-semibold text-amber-600"
+              >
+                En cours
+              </p>
+
+              <p
+                class="mt-2 text-3xl font-black text-slate-900"
+              >
+                {{ enCours }}
+              </p>
+            </article>
+
+            <article
+              class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
+            >
+              <p
+                class="text-sm font-semibold text-emerald-600"
+              >
+                Résolues
+              </p>
+
+              <p
+                class="mt-2 text-3xl font-black text-slate-900"
+              >
+                {{ resolues }}
+              </p>
+            </article>
+
+          </div>
+
+          <!-- Filtres -->
+          <div
+            class="mt-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
+          >
+
+            <div
+              class="grid gap-4 md:grid-cols-[1fr_220px]"
+            >
+
+              <div>
+                <label
+                  for="recherche"
+                  class="mb-2 block text-sm font-bold text-slate-700"
+                >
+                  Rechercher
+                </label>
+
+                <input
+                  id="recherche"
+                  type="text"
+                  [(ngModel)]="recherche"
+                  (ngModelChange)="onRechercheChange()"
+                  placeholder="Titre, catégorie, référence..."
+                  class="h-12 w-full rounded-xl border border-slate-300 px-4 text-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="statut"
+                  class="mb-2 block text-sm font-bold text-slate-700"
+                >
+                  Statut
+                </label>
+
+                <select
+                  id="statut"
+                  [(ngModel)]="filtreStatut"
+                  (ngModelChange)="onStatutChange()"
+                  class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+                >
+                  <option value="TOUS">
+                    Tous les statuts
+                  </option>
+
+                  <option value="NOUVELLE">
+                    Nouvelle
+                  </option>
+
+                  <option value="AFFECTEE">
+                    Affectée
+                  </option>
+
+                  <option value="EN_COURS">
+                    En cours
+                  </option>
+
+                  <option value="RESOLUE">
+                    Résolue
+                  </option>
+
+                  <option value="FERMEE">
+                    Fermée
+                  </option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Erreur -->
+          @if (errorMessage) {
+
+            <div
+              class="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700"
+            >
+              {{ errorMessage }}
+            </div>
+
+          }
+
+          <!-- Liste -->
+          <div
+            class="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"
+          >
+
+            <div
+              class="border-b border-slate-100 p-6"
+            >
+              <h2
+                class="text-lg font-black text-slate-900"
+              >
+                Liste de mes demandes
+              </h2>
+
+              <p
+                class="mt-1 text-sm text-slate-500"
+              >
+                {{ demandesFiltrees.length }}
+                demande(s) affichée(s)
+              </p>
+            </div>
+
+            @if (isLoading) {
+
+              <div
+                class="flex justify-center p-12 text-sm font-semibold text-slate-500"
+              >
+                Chargement de vos demandes...
+              </div>
+
+            } @else if (
+              demandesFiltrees.length > 0
+            ) {
+
+              <div
+                class="divide-y divide-slate-100"
+              >
+
+                @for (
+                  demande of demandesFiltrees;
+                  track demande.id
+                ) {
+
+                  <article
+                    class="p-6 transition hover:bg-slate-50"
+                  >
+
+                    <div
+                      class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between"
+                    >
+
+                      <div
+                        class="min-w-0 flex-1"
+                      >
+
+                        <div
+                          class="flex flex-wrap items-center gap-2"
+                        >
+
+                          <span
+                            class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600"
+                          >
+                            @if (
+                              demande.referenceDemande
+                            ) {
+                              {{
+                                demande.referenceDemande
+                              }}
+                            } @else {
+                              Demande #{{ demande.id }}
+                            }
+                          </span>
+
+                          @if (
+                            demande.statut ===
+                            'NOUVELLE'
+                          ) {
+
+                            <span
+                              class="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700"
+                            >
+                              Nouvelle
+                            </span>
+
+                          } @else if (
+                            demande.statut ===
+                            'AFFECTEE'
+                          ) {
+
+                            <span
+                              class="rounded-full bg-violet-50 px-3 py-1 text-xs font-bold text-violet-700"
+                            >
+                              Affectée
+                            </span>
+
+                          } @else if (
+                            demande.statut ===
+                            'EN_COURS'
+                          ) {
+
+                            <span
+                              class="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700"
+                            >
+                              En cours
+                            </span>
+
+                          } @else if (
+                            demande.statut ===
+                            'RESOLUE'
+                          ) {
+
+                            <span
+                              class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700"
+                            >
+                              Résolue
+                            </span>
+
+                          } @else {
+
+                            <span
+                              class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600"
+                            >
+                              Fermée
+                            </span>
+
+                          }
+
+                        </div>
+
+                        <h3
+                          class="mt-3 text-lg font-black text-slate-900"
+                        >
+                          {{ demande.titre }}
+                        </h3>
+
+                        <p
+                          class="mt-2 text-sm leading-6 text-slate-500"
+                        >
+                          {{ demande.description }}
+                        </p>
+
+                        <div
+                          class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-xs text-slate-500"
+                        >
+
+                          <span>
+                            Catégorie :
+                            <strong
+                              class="text-slate-700"
+                            >
+                              {{ demande.categorie }}
+                            </strong>
+                          </span>
+
+                          <span>
+                            Priorité :
+                            <strong
+                              class="text-slate-700"
+                            >
+                              {{ demande.priorite }}
+                            </strong>
+                          </span>
+
+                          @if (
+                            demande.dateCreation
+                          ) {
+
+                            <span>
+                              Créée le :
+                              <strong
+                                class="text-slate-700"
+                              >
+                                {{
+                                  demande.dateCreation
+                                    | date:
+                                      'dd/MM/yyyy HH:mm'
+                                }}
+                              </strong>
+                            </span>
+
+                          }
+
+                        </div>
+
+                        @if (
+                          demande.agentResponsable
+                        ) {
+
+                          <div
+                            class="mt-4 rounded-xl bg-slate-50 px-4 py-3 text-xs text-slate-600"
+                          >
+                            Agent responsable :
+
+                            <strong>
+                              {{
+                                demande.agentResponsable.prenom
+                              }}
+                              {{
+                                demande.agentResponsable.nom
+                              }}
+                            </strong>
+                          </div>
+
+                        }
+
+                      </div>
+
+                    </div>
+
+                  </article>
+
+                }
+
+              </div>
+
+            } @else {
+
+              <div
+                class="flex flex-col items-center justify-center px-6 py-14 text-center"
+              >
+
+                <div
+                  class="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-2xl"
+                >
+                  📄
+                </div>
+
+                <h3
+                  class="mt-5 text-lg font-black text-slate-800"
+                >
+                  Aucune demande trouvée
+                </h3>
+
+                <p
+                  class="mt-2 text-sm text-slate-500"
+                >
+                  Modifiez vos filtres ou créez
+                  une nouvelle demande.
+                </p>
+
+                <a
+                  routerLink="/client/nouvelle-demande"
+                  class="mt-5 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white"
+                >
+                  Nouvelle demande
+                </a>
+
+              </div>
+
+            }
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </div>
+
+  }
+
+</main>

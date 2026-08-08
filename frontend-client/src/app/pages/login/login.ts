@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import {
   FormBuilder,
@@ -5,20 +6,39 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
+
+import {
+  AuthService,
+  LoginRequest,
+} from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+  ],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login {
+
   loginForm: FormGroup;
+
   submitted = false;
   showPassword = false;
+  isLoading = false;
 
-  constructor(private formBuilder: FormBuilder) {
+  successMessage = '';
+  errorMessage = '';
+
+  constructor(
+    private readonly formBuilder: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly router: Router
+  ) {
     this.loginForm = this.formBuilder.group({
       email: [
         '',
@@ -27,6 +47,7 @@ export class Login {
           Validators.email,
         ],
       ],
+
       password: [
         '',
         [
@@ -34,6 +55,7 @@ export class Login {
           Validators.minLength(6),
         ],
       ],
+
       rememberMe: [false],
     });
   }
@@ -51,18 +73,86 @@ export class Login {
   }
 
   onSubmit(): void {
+
     this.submitted = true;
+    this.successMessage = '';
+    this.errorMessage = '';
 
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
     }
 
-    console.log('Informations de connexion :', this.loginForm.value);
+    const formValue =
+      this.loginForm.getRawValue();
 
-    /*
-     * La connexion avec le backend et JWT sera ajoutée
-     * après la création de l'interface.
-     */
+    const request: LoginRequest = {
+      email: formValue.email
+        .trim()
+        .toLowerCase(),
+
+      motDePasse: formValue.password,
+    };
+
+    this.isLoading = true;
+
+    this.authService
+      .login(request)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+
+        next: (response) => {
+
+          if (response.role === 'CLIENT') {
+
+            localStorage.setItem(
+              'clientflow_user',
+              JSON.stringify(response)
+            );
+
+            this.successMessage =
+              'Connexion réussie.';
+
+            setTimeout(() => {
+              this.router.navigate([
+                '/client/dashboard',
+              ]);
+            }, 800);
+
+            return;
+          }
+
+          this.errorMessage =
+            'Ce compte doit utiliser l’espace administration.';
+        },
+
+        error: (error: HttpErrorResponse) => {
+
+          if (error.status === 0) {
+            this.errorMessage =
+              'Impossible de contacter le serveur.';
+            return;
+          }
+
+          if (error.status === 401) {
+            this.errorMessage =
+              'Adresse e-mail ou mot de passe incorrect.';
+            return;
+          }
+
+          if (error.status === 403) {
+            this.errorMessage =
+              'Ce compte est désactivé.';
+            return;
+          }
+
+          this.errorMessage =
+            'Une erreur est survenue lors de la connexion.';
+        },
+      });
   }
 }

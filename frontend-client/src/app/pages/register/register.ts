@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import {
   AbstractControl,
@@ -7,11 +8,21 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
+
+import {
+  AuthService,
+  RegisterClientRequest,
+  TypeClient,
+} from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+  ],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
@@ -21,11 +32,22 @@ export class Register {
   submitted = false;
   showPassword = false;
   showConfirmPassword = false;
+  isLoading = false;
 
-  constructor(private formBuilder: FormBuilder) {
+  successMessage = '';
+  errorMessage = '';
+
+  constructor(
+    private readonly formBuilder: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly router: Router
+  ) {
     this.registerForm = this.formBuilder.group(
       {
-        typeClient: ['PARTICULIER', Validators.required],
+        typeClient: [
+          'PARTICULIER',
+          Validators.required,
+        ],
 
         nom: [
           '',
@@ -50,6 +72,7 @@ export class Register {
           [
             Validators.required,
             Validators.email,
+            Validators.maxLength(150),
           ],
         ],
 
@@ -66,6 +89,7 @@ export class Register {
           [
             Validators.required,
             Validators.minLength(8),
+            Validators.maxLength(100),
             Validators.pattern(
               /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/
             ),
@@ -125,14 +149,18 @@ export class Register {
   }
 
   toggleConfirmPasswordVisibility(): void {
-    this.showConfirmPassword = !this.showConfirmPassword;
+    this.showConfirmPassword =
+      !this.showConfirmPassword;
   }
 
   passwordsMatchValidator(
     formGroup: AbstractControl
   ): ValidationErrors | null {
-    const password = formGroup.get('password')?.value;
-    const confirmPassword = formGroup.get('confirmPassword')?.value;
+    const password =
+      formGroup.get('password')?.value;
+
+    const confirmPassword =
+      formGroup.get('confirmPassword')?.value;
 
     if (!password || !confirmPassword) {
       return null;
@@ -140,30 +168,110 @@ export class Register {
 
     return password === confirmPassword
       ? null
-      : { passwordsNotMatching: true };
+      : {
+          passwordsNotMatching: true,
+        };
   }
 
   onSubmit(): void {
     this.submitted = true;
+    this.successMessage = '';
+    this.errorMessage = '';
 
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
     }
 
-    const registrationData = {
-      ...this.registerForm.value,
-      role: 'CLIENT',
+    const formValue =
+      this.registerForm.getRawValue();
+
+    const request: RegisterClientRequest = {
+      typeClient:
+        formValue.typeClient as TypeClient,
+
+      nom:
+        formValue.nom.trim(),
+
+      prenom:
+        formValue.prenom.trim(),
+
+      email:
+        formValue.email
+          .trim()
+          .toLowerCase(),
+
+      telephone:
+        formValue.telephone.trim(),
+
+      motDePasse:
+        formValue.password,
     };
 
-    console.log(
-      'Informations d’inscription :',
-      registrationData
-    );
+    this.isLoading = true;
 
-    /*
-     * La création réelle du compte CLIENT dans le backend
-     * sera ajoutée lors de l'étape d'authentification.
-     */
+    this.authService
+      .registerClient(request)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          this.successMessage =
+            response.message ||
+            'Votre compte a été créé avec succès.';
+
+          this.registerForm.reset({
+            typeClient: 'PARTICULIER',
+            acceptTerms: false,
+          });
+
+          this.submitted = false;
+
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 1500);
+        },
+
+        error: (error: HttpErrorResponse) => {
+          this.errorMessage =
+            this.extractErrorMessage(error);
+        },
+      });
+  }
+
+  private extractErrorMessage(
+    error: HttpErrorResponse
+  ): string {
+    if (error.status === 0) {
+      return (
+        'Impossible de contacter le serveur. ' +
+        'Vérifiez que le backend fonctionne sur le port 8081.'
+      );
+    }
+
+    if (error.status === 409) {
+      return (
+        'Un compte existe déjà avec cette adresse e-mail.'
+      );
+    }
+
+    if (
+      typeof error.error === 'object' &&
+      error.error !== null
+    ) {
+      return (
+        error.error.detail ||
+        error.error.message ||
+        error.error.error ||
+        'Une erreur est survenue pendant la création du compte.'
+      );
+    }
+
+    return (
+      'Une erreur est survenue pendant la création du compte.'
+    );
   }
 }

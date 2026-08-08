@@ -1,0 +1,448 @@
+<main class="min-h-screen bg-slate-50 px-5 py-10 lg:px-8">
+
+  <div class="mx-auto max-w-5xl">
+
+    <!-- Retour -->
+    <button
+      type="button"
+      (click)="annuler()"
+      class="mb-6 inline-flex items-center gap-2 text-sm font-bold text-slate-500 transition hover:text-indigo-600"
+    >
+      <svg
+        class="h-5 w-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 18l-6-6 6-6"
+        />
+      </svg>
+
+      Retour au tableau de bord
+    </button>
+
+    <!-- En-tête -->
+    <div
+      class="mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 to-violet-600 p-7 text-white shadow-xl shadow-indigo-200 sm:p-9"
+    >
+      <span
+        class="inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-wider"
+      >
+        Nouvelle demande
+      </span>
+
+      <h1
+        class="mt-5 text-3xl font-black tracking-tight sm:text-4xl"
+      >
+        Comment pouvons-nous vous aider ?
+      </h1>
+
+      <p
+        class="mt-3 max-w-2xl leading-7 text-indigo-100"
+      >
+        Décrivez votre demande avec précision. Elle sera transmise
+        à notre équipe et vous pourrez suivre son avancement depuis
+        votre espace ClientFlow.
+      </p>
+    </div>
+
+    <!-- Message succès -->
+    @if (successMessage) {
+      <div
+        class="mb-6 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-semibold text-green-700"
+      >
+        {{ successMessage }}
+      </div>
+    }
+
+    <!-- Message erreur -->
+    @if (errorMessage) {
+      <div
+        class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-red-700"
+      >
+        {{ errorMessage }}
+      </div>
+    }
+
+    <div class="grid gap-7 lg:grid-cols-[1fr_280px]">
+
+      <!-- Formulaire -->
+      <section
+        class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"
+      >
+        <div class="mb-7">
+          <h2 class="text-xl font-black text-slate-900">
+            Informations de la demande
+          </h2>
+
+          <p class="mt-2 text-sm text-slate-500">
+            Les champs marqués comme obligatoires doivent être renseignés.
+          </p>
+        </div>
+
+        <form
+          [formGroup]="demandeForm"
+          (ngSubmit)="onSubmit()"
+          novalidate
+          class="space-y-6"
+        >
+
+          <!-- Titre -->
+          <div>
+            <label
+              for="titre"
+              class="mb-2 block text-sm font-bold text-slate-700"
+            >
+              Titre de la demande
+              <span class="text-red-500">*</span>
+            </label>
+
+            <input
+              id="titre"
+              type="text"
+              formControlName="titre"
+              placeholder="Ex. Problème avec mon service"
+              class="h-14 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+              [class.border-red-400]="
+                titre?.invalid &&
+                (titre?.touched || submitted)
+              "
+              [class.border-slate-300]="
+                !(
+                  titre?.invalid &&
+                  (titre?.touched || submitted)
+                )
+              "
+            />
+
+            @if (
+              titre?.invalid &&
+              (titre?.touched || submitted)
+            ) {
+              <div
+                class="mt-2 text-xs font-semibold text-red-500"
+              >
+                @if (titre?.hasError('required')) {
+                  Le titre est obligatoire.
+                } @else if (titre?.hasError('minlength')) {
+                  Le titre doit contenir au moins 3 caractères.
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Catégorie + priorité -->
+          <div class="grid gap-5 sm:grid-cols-2">
+
+            <!-- Catégorie -->
+            <div>
+              <label
+                for="categorie"
+                class="mb-2 block text-sm font-bold text-slate-700"
+              >
+                Catégorie
+                <span class="text-red-500">*</span>
+              </label>
+
+              <select
+                id="categorie"
+                formControlName="categorie"
+                class="h-14 w-full rounded-xl border bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+                [class.border-red-400]="
+                  categorie?.invalid &&
+                  (categorie?.touched || submitted)
+                "
+                [class.border-slate-300]="
+                  !(
+                    categorie?.invalid &&
+                    (categorie?.touched || submitted)
+                  )
+                "
+              >
+                <option value="">
+                  Choisir une catégorie
+                </option>
+
+                <option value="RECLAMATION">
+                  Réclamation
+                </option>
+
+                <option value="DEMANDE_SERVICE">
+                  Demande de service
+                </option>
+
+                <option value="INFORMATION">
+                  Demande d'information
+                </option>
+
+                <option value="INCIDENT">
+                  Incident / problème
+                </option>
+
+                <option value="AUTRE">
+                  Autre
+                </option>
+              </select>
+
+              @if (
+                categorie?.invalid &&
+                (categorie?.touched || submitted)
+              ) {
+                <div
+                  class="mt-2 text-xs font-semibold text-red-500"
+                >
+                  La catégorie est obligatoire.
+                </div>
+              }
+            </div>
+
+            <!-- Priorité -->
+            <div>
+              <label
+                for="priorite"
+                class="mb-2 block text-sm font-bold text-slate-700"
+              >
+                Priorité
+                <span class="text-red-500">*</span>
+              </label>
+
+              <select
+                id="priorite"
+                formControlName="priorite"
+                class="h-14 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+              >
+                <option value="BASSE">
+                  Basse
+                </option>
+
+                <option value="MOYENNE">
+                  Moyenne
+                </option>
+
+                <option value="HAUTE">
+                  Haute
+                </option>
+
+                <option value="URGENTE">
+                  Urgente
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label
+              for="description"
+              class="mb-2 block text-sm font-bold text-slate-700"
+            >
+              Description
+              <span class="text-red-500">*</span>
+            </label>
+
+            <textarea
+              id="description"
+              formControlName="description"
+              rows="7"
+              placeholder="Décrivez votre demande de manière claire et détaillée..."
+              class="w-full resize-none rounded-xl border bg-white px-4 py-4 text-sm leading-6 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+              [class.border-red-400]="
+                description?.invalid &&
+                (description?.touched || submitted)
+              "
+              [class.border-slate-300]="
+                !(
+                  description?.invalid &&
+                  (description?.touched || submitted)
+                )
+              "
+            ></textarea>
+
+            @if (
+              description?.invalid &&
+              (description?.touched || submitted)
+            ) {
+              <div
+                class="mt-2 text-xs font-semibold text-red-500"
+              >
+                @if (description?.hasError('required')) {
+                  La description est obligatoire.
+                } @else if (
+                  description?.hasError('minlength')
+                ) {
+                  La description doit contenir au moins 10 caractères.
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Boutons -->
+          <div
+            class="flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:justify-end"
+          >
+            <button
+              type="button"
+              (click)="annuler()"
+              [disabled]="isLoading"
+              class="h-12 rounded-xl border border-slate-300 bg-white px-6 text-sm font-bold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
+            >
+              Annuler
+            </button>
+
+            <button
+              type="submit"
+              [disabled]="isLoading"
+              class="flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-7 text-sm font-bold text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+            >
+              @if (isLoading) {
+
+                <svg
+                  class="h-5 w-5 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4Z"
+                  ></path>
+                </svg>
+
+                Envoi en cours...
+
+              } @else {
+
+                Envoyer ma demande
+
+                <svg
+                  class="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 12h14m-6-6 6 6-6 6"
+                  />
+                </svg>
+
+              }
+            </button>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- Informations client -->
+      <aside class="space-y-5">
+
+        <div
+          class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+        >
+          <p
+            class="text-xs font-bold uppercase tracking-wider text-indigo-600"
+          >
+            Demandeur
+          </p>
+
+          @if (user) {
+            <h3
+              class="mt-3 text-lg font-black text-slate-900"
+            >
+              {{ user.prenom }} {{ user.nom }}
+            </h3>
+
+            <p
+              class="mt-1 break-all text-sm text-slate-500"
+            >
+              {{ user.email }}
+            </p>
+          }
+
+          <div
+            class="mt-5 rounded-xl bg-indigo-50 px-4 py-3 text-xs font-semibold leading-5 text-indigo-700"
+          >
+            Votre compte sera automatiquement associé à cette demande.
+          </div>
+        </div>
+
+        <div
+          class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+        >
+          <h3
+            class="text-sm font-black text-slate-900"
+          >
+            Que se passe-t-il ensuite ?
+          </h3>
+
+          <div class="mt-5 space-y-4">
+
+            <div class="flex gap-3">
+              <span
+                class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-black text-indigo-600"
+              >
+                1
+              </span>
+
+              <p
+                class="text-xs leading-5 text-slate-500"
+              >
+                Votre demande est enregistrée avec le statut
+                <strong class="text-slate-700">Nouvelle</strong>.
+              </p>
+            </div>
+
+            <div class="flex gap-3">
+              <span
+                class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-black text-indigo-600"
+              >
+                2
+              </span>
+
+              <p
+                class="text-xs leading-5 text-slate-500"
+              >
+                Un agent pourra la prendre en charge depuis
+                l'espace administration.
+              </p>
+            </div>
+
+            <div class="flex gap-3">
+              <span
+                class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-black text-indigo-600"
+              >
+                3
+              </span>
+
+              <p
+                class="text-xs leading-5 text-slate-500"
+              >
+                Vous pourrez suivre son statut depuis votre espace client.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+</main>
