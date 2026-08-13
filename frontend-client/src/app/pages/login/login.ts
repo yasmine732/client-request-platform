@@ -1,13 +1,26 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Component } from '@angular/core';
+import {
+  HttpErrorResponse,
+} from '@angular/common/http';
+
+import {
+  Component,
+} from '@angular/core';
+
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
+
+import {
+  Router,
+  RouterLink,
+} from '@angular/router';
+
+import {
+  finalize,
+} from 'rxjs';
 
 import {
   AuthService,
@@ -16,10 +29,12 @@ import {
 
 @Component({
   selector: 'app-login',
+
   imports: [
     ReactiveFormsModule,
     RouterLink,
   ],
+
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -28,70 +43,104 @@ export class Login {
   loginForm: FormGroup;
 
   submitted = false;
+
   showPassword = false;
+
   isLoading = false;
 
   successMessage = '';
+
   errorMessage = '';
 
   constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly authService: AuthService,
-    private readonly router: Router
+    private readonly formBuilder:
+      FormBuilder,
+
+    private readonly authService:
+      AuthService,
+
+    private readonly router:
+      Router
   ) {
-    this.loginForm = this.formBuilder.group({
-      email: [
-        '',
-        [
-          Validators.required,
-          Validators.email,
-        ],
-      ],
 
-      password: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(6),
-        ],
-      ],
+    this.loginForm =
+      this.formBuilder.group({
 
-      rememberMe: [false],
-    });
+        email: [
+          '',
+          [
+            Validators.required,
+            Validators.email,
+          ],
+        ],
+
+        password: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(6),
+          ],
+        ],
+
+        rememberMe: [
+          false,
+        ],
+      });
   }
 
   get email() {
-    return this.loginForm.get('email');
+
+    return this.loginForm.get(
+      'email'
+    );
   }
 
   get password() {
-    return this.loginForm.get('password');
+
+    return this.loginForm.get(
+      'password'
+    );
   }
 
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
+  togglePasswordVisibility():
+    void {
+
+    this.showPassword =
+      !this.showPassword;
   }
 
   onSubmit(): void {
 
     this.submitted = true;
+
     this.successMessage = '';
+
     this.errorMessage = '';
 
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
+    if (
+      this.loginForm.invalid
+    ) {
+
+      this.loginForm
+        .markAllAsTouched();
+
       return;
     }
 
     const formValue =
-      this.loginForm.getRawValue();
+      this.loginForm
+        .getRawValue();
 
-    const request: LoginRequest = {
-      email: formValue.email
-        .trim()
-        .toLowerCase(),
+    const request:
+      LoginRequest = {
 
-      motDePasse: formValue.password,
+      email:
+        formValue.email
+          .trim()
+          .toLowerCase(),
+
+      motDePasse:
+        formValue.password,
     };
 
     this.isLoading = true;
@@ -100,53 +149,115 @@ export class Login {
       .login(request)
       .pipe(
         finalize(() => {
-          this.isLoading = false;
+
+          this.isLoading =
+            false;
         })
       )
       .subscribe({
 
         next: (response) => {
 
-          if (response.role === 'CLIENT') {
+          /*
+           * CLIENT
+           */
+          if (
+            response.role ===
+            'CLIENT'
+          ) {
 
             localStorage.setItem(
               'clientflow_user',
-              JSON.stringify(response)
+              JSON.stringify(
+                response
+              )
             );
 
             this.successMessage =
               'Connexion réussie.';
 
-            setTimeout(() => {
-              this.router.navigate([
-                '/client/dashboard',
-              ]);
-            }, 800);
+            setTimeout(
+              () => {
+
+                this.router.navigate(
+                  [
+                    '/client/dashboard',
+                  ]
+                );
+
+              },
+              500
+            );
+
+            return;
+          }
+
+          /*
+           * ADMIN / AGENT
+           */
+          if (
+            response.role ===
+              'ADMIN' ||
+            response.role ===
+              'AGENT'
+          ) {
+
+            localStorage.removeItem(
+              'clientflow_user'
+            );
+
+            this.successMessage =
+              'Connexion réussie. Redirection vers l’administration...';
+
+            setTimeout(
+              () => {
+
+                window.location.href =
+                  'http://localhost:4200/default';
+
+              },
+              600
+            );
 
             return;
           }
 
           this.errorMessage =
-            'Ce compte doit utiliser l’espace administration.';
+            'Rôle utilisateur non reconnu.';
         },
 
-        error: (error: HttpErrorResponse) => {
+        error: (
+          error:
+            HttpErrorResponse
+        ) => {
 
-          if (error.status === 0) {
+          if (
+            error.status === 0
+          ) {
+
             this.errorMessage =
               'Impossible de contacter le serveur.';
+
             return;
           }
 
-          if (error.status === 401) {
+          if (
+            error.status === 401
+          ) {
+
             this.errorMessage =
               'Adresse e-mail ou mot de passe incorrect.';
+
             return;
           }
 
-          if (error.status === 403) {
+          if (
+            error.status === 403
+          ) {
+
             this.errorMessage =
               'Ce compte est désactivé.';
+
             return;
           }
 

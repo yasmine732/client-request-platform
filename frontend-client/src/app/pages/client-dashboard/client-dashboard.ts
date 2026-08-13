@@ -1,5 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+} from '@angular/core';
+
+import {
+  Router,
+  RouterLink,
+} from '@angular/router';
 
 import {
   LoginResponse,
@@ -37,7 +45,8 @@ export class ClientDashboard implements OnInit {
 
   constructor(
     private readonly router: Router,
-    private readonly demandeService: DemandeService
+    private readonly demandeService: DemandeService,
+    private readonly cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -61,6 +70,7 @@ export class ClientDashboard implements OnInit {
         user.role !== 'CLIENT' ||
         !user.clientId
       ) {
+
         localStorage.removeItem(
           'clientflow_user'
         );
@@ -93,20 +103,21 @@ export class ClientDashboard implements OnInit {
     this.errorMessage = '';
 
     const clientId =
-      this.user.clientId;
+      Number(this.user.clientId);
 
     this.demandeService
-      .getDemandes()
+      .getDemandesClient(clientId)
       .subscribe({
 
         next: (demandes) => {
 
-          this.demandes = demandes
-            .filter(
-              (demande) =>
-                demande.client?.id === clientId
-            )
-            .sort(
+          console.log(
+            'Demandes client reçues :',
+            demandes
+          );
+
+          this.demandes =
+            [...demandes].sort(
               (a, b) => {
 
                 const dateA =
@@ -133,29 +144,44 @@ export class ClientDashboard implements OnInit {
           this.demandesEnCours =
             this.demandes.filter(
               (demande) =>
-                demande.statut ===
-                'EN_COURS'
+                demande.statut === 'AFFECTEE' ||
+                demande.statut === 'EN_COURS'
             ).length;
 
           this.demandesResolues =
             this.demandes.filter(
               (demande) =>
-                demande.statut ===
-                'RESOLUE'
+                demande.statut === 'RESOLUE'
             ).length;
 
           this.dernieresDemandes =
             this.demandes.slice(0, 5);
 
           this.isLoading = false;
+
+          this.cdr.detectChanges();
         },
 
-        error: () => {
+        error: (error) => {
+
+          console.error(
+            'Erreur chargement demandes client :',
+            error
+          );
 
           this.errorMessage =
             'Impossible de charger vos demandes.';
 
+          this.demandes = [];
+          this.dernieresDemandes = [];
+
+          this.totalDemandes = 0;
+          this.demandesEnCours = 0;
+          this.demandesResolues = 0;
+
           this.isLoading = false;
+
+          this.cdr.detectChanges();
         },
       });
   }

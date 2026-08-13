@@ -1,17 +1,22 @@
 <div class="page-demandes">
 
-  <!-- En-tête -->
+  <!-- EN-TÊTE -->
   <section class="hero-card">
+
     <div>
+
       <p class="section-label">
         GESTION COMMERCIALE
       </p>
 
-      <h1>Gestion des demandes</h1>
+      <h1>
+        Gestion des demandes
+      </h1>
 
       <p class="subtitle">
         Suivez et traitez les demandes envoyées par les clients.
       </p>
+
     </div>
 
     <button
@@ -19,64 +24,92 @@
       class="btn-primary"
       (click)="ouvrirAjout()"
     >
-      + Ajouter une demande
+      <i class="ti ti-plus"></i>
+
+      Ajouter une demande
     </button>
+
   </section>
 
-  <!-- Statistiques -->
+  <!-- STATISTIQUES -->
   <section class="stats-grid">
 
     <article class="stat-card">
+
       <div class="stat-icon">
-        D
+        <i class="ti ti-files"></i>
       </div>
 
       <div>
-        <p>Total demandes</p>
+
+        <p>
+          Total demandes
+        </p>
+
         <strong>
           {{ demandes.length }}
         </strong>
+
       </div>
+
     </article>
 
     <article class="stat-card">
-      <div class="stat-icon">
-        N
+
+      <div class="stat-icon stat-icon-new">
+        <i class="ti ti-bell"></i>
       </div>
 
       <div>
-        <p>Nouvelles demandes</p>
+
+        <p>
+          Nouvelles demandes
+        </p>
+
         <strong>
           {{ nombreDemandesNouvelles() }}
         </strong>
+
       </div>
+
     </article>
 
   </section>
 
-  <!-- Message de succès -->
+  <!-- SUCCÈS -->
   <div
     *ngIf="messageSucces"
     class="alert alert-success"
   >
+
+    <i class="ti ti-circle-check"></i>
+
     {{ messageSucces }}
+
   </div>
 
-  <!-- Message d'erreur général -->
+  <!-- ERREUR -->
   <div
     *ngIf="messageErreur"
     class="alert alert-error"
   >
+
+    <i class="ti ti-alert-circle"></i>
+
     {{ messageErreur }}
+
   </div>
 
-  <!-- Formulaire -->
+  <!-- FORMULAIRE -->
   <section
     *ngIf="formulaireVisible"
     class="form-card"
   >
+
     <div class="form-header">
+
       <div>
+
         <p class="section-label">
           FORMULAIRE
         </p>
@@ -92,6 +125,7 @@
         <p class="required-information">
           Les champs avec * sont obligatoires.
         </p>
+
       </div>
 
       <button
@@ -101,6 +135,7 @@
       >
         ×
       </button>
+
     </div>
 
     <form
@@ -108,10 +143,12 @@
       class="demande-form"
       novalidate
     >
+
       <div class="form-grid">
 
-        <!-- Client -->
+        <!-- CLIENT -->
         <div class="form-group">
+
           <label for="client">
             Client *
           </label>
@@ -128,6 +165,7 @@
             (ngModelChange)="effacerMessageErreur()"
             required
           >
+
             <option [ngValue]="null">
               Sélectionner un client
             </option>
@@ -138,6 +176,7 @@
             >
               {{ nomClient(client) }}
             </option>
+
           </select>
 
           <small
@@ -149,10 +188,12 @@
           >
             Vous devez sélectionner un client.
           </small>
+
         </div>
 
-        <!-- Titre -->
+        <!-- TITRE -->
         <div class="form-group">
+
           <label for="titre">
             Titre *
           </label>
@@ -165,9 +206,11 @@
             #titreChamp="ngModel"
             maxlength="150"
             [class.input-error]="
-              (titreChamp.dirty ||
-               titreChamp.touched ||
-               soumissionEffectuee) &&
+              (
+                titreChamp.dirty ||
+                titreChamp.touched ||
+                soumissionEffectuee
+              ) &&
               (
                 titreVide() ||
                 titreTropCourt() ||
@@ -182,9 +225,11 @@
           <small
             class="field-error"
             *ngIf="
-              (titreChamp.dirty ||
-               titreChamp.touched ||
-               soumissionEffectuee) &&
+              (
+                titreChamp.dirty ||
+                titreChamp.touched ||
+                soumissionEffectuee
+              ) &&
               titreVide()
             "
           >
@@ -194,9 +239,11 @@
           <small
             class="field-error"
             *ngIf="
-              (titreChamp.dirty ||
-               titreChamp.touched ||
-               soumissionEffectuee) &&
+              (
+                titreChamp.dirty ||
+                titreChamp.touched ||
+                soumissionEffectuee
+              ) &&
               titreTropCourt()
             "
           >
@@ -206,9 +253,11 @@
           <small
             class="field-error"
             *ngIf="
-              (titreChamp.dirty ||
-               titreChamp.touched ||
-               soumissionEffectuee) &&
+              (
+                titreChamp.dirty ||
+                titreChamp.touched ||
+                soumissionEffectuee
+              ) &&
               titreTropLong()
             "
           >
@@ -218,10 +267,12 @@
           <small class="character-counter">
             {{ formulaire.titre.length }}/150 caractères
           </small>
+
         </div>
 
-        <!-- Catégorie -->
+        <!-- CATÉGORIE -->
         <div class="form-group">
+
           <label for="categorie">
             Catégorie *
           </label>
@@ -234,9 +285,11 @@
             #categorieChamp="ngModel"
             maxlength="100"
             [class.input-error]="
-              (categorieChamp.dirty ||
-               categorieChamp.touched ||
-               soumissionEffectuee) &&
+              (
+                categorieChamp.dirty ||
+                categorieChamp.touched ||
+                soumissionEffectuee
+              ) &&
               (
                 categorieVide() ||
                 categorieTropCourte() ||
@@ -251,9 +304,11 @@
           <small
             class="field-error"
             *ngIf="
-              (categorieChamp.dirty ||
-               categorieChamp.touched ||
-               soumissionEffectuee) &&
+              (
+                categorieChamp.dirty ||
+                categorieChamp.touched ||
+                soumissionEffectuee
+              ) &&
               categorieVide()
             "
           >
@@ -263,9 +318,11 @@
           <small
             class="field-error"
             *ngIf="
-              (categorieChamp.dirty ||
-               categorieChamp.touched ||
-               soumissionEffectuee) &&
+              (
+                categorieChamp.dirty ||
+                categorieChamp.touched ||
+                soumissionEffectuee
+              ) &&
               categorieTropCourte()
             "
           >
@@ -275,9 +332,11 @@
           <small
             class="field-error"
             *ngIf="
-              (categorieChamp.dirty ||
-               categorieChamp.touched ||
-               soumissionEffectuee) &&
+              (
+                categorieChamp.dirty ||
+                categorieChamp.touched ||
+                soumissionEffectuee
+              ) &&
               categorieTropLongue()
             "
           >
@@ -287,10 +346,12 @@
           <small class="character-counter">
             {{ formulaire.categorie.length }}/100 caractères
           </small>
+
         </div>
 
-        <!-- Priorité -->
+        <!-- PRIORITÉ -->
         <div class="form-group">
+
           <label for="priorite">
             Priorité *
           </label>
@@ -299,20 +360,23 @@
             id="priorite"
             name="priorite"
             [(ngModel)]="formulaire.priorite"
-            (ngModelChange)="effacerMessageErreur()"
             required
           >
+
             <option
               *ngFor="let priorite of priorites"
               [ngValue]="priorite"
             >
               {{ afficherValeurEnum(priorite) }}
             </option>
+
           </select>
+
         </div>
 
-        <!-- Statut -->
+        <!-- STATUT -->
         <div class="form-group">
+
           <label for="statut">
             Statut *
           </label>
@@ -321,20 +385,23 @@
             id="statut"
             name="statut"
             [(ngModel)]="formulaire.statut"
-            (ngModelChange)="effacerMessageErreur()"
             required
           >
+
             <option
               *ngFor="let statut of statuts"
               [ngValue]="statut"
             >
               {{ afficherValeurEnum(statut) }}
             </option>
+
           </select>
+
         </div>
 
-        <!-- Description -->
+        <!-- DESCRIPTION -->
         <div class="form-group full-width">
+
           <label for="description">
             Description *
           </label>
@@ -347,16 +414,17 @@
             #descriptionChamp="ngModel"
             maxlength="2000"
             [class.input-error]="
-              (descriptionChamp.dirty ||
-               descriptionChamp.touched ||
-               soumissionEffectuee) &&
+              (
+                descriptionChamp.dirty ||
+                descriptionChamp.touched ||
+                soumissionEffectuee
+              ) &&
               (
                 descriptionVide() ||
                 descriptionTropCourte() ||
                 descriptionTropLongue()
               )
             "
-            (ngModelChange)="effacerMessageErreur()"
             placeholder="Décrivez le problème du client..."
             required
           ></textarea>
@@ -364,9 +432,11 @@
           <small
             class="field-error"
             *ngIf="
-              (descriptionChamp.dirty ||
-               descriptionChamp.touched ||
-               soumissionEffectuee) &&
+              (
+                descriptionChamp.dirty ||
+                descriptionChamp.touched ||
+                soumissionEffectuee
+              ) &&
               descriptionVide()
             "
           >
@@ -376,35 +446,25 @@
           <small
             class="field-error"
             *ngIf="
-              (descriptionChamp.dirty ||
-               descriptionChamp.touched ||
-               soumissionEffectuee) &&
+              (
+                descriptionChamp.dirty ||
+                descriptionChamp.touched ||
+                soumissionEffectuee
+              ) &&
               descriptionTropCourte()
             "
           >
             La description doit contenir au moins 10 caractères.
           </small>
 
-          <small
-            class="field-error"
-            *ngIf="
-              (descriptionChamp.dirty ||
-               descriptionChamp.touched ||
-               soumissionEffectuee) &&
-              descriptionTropLongue()
-            "
-          >
-            La description ne doit pas dépasser 2000 caractères.
-          </small>
-
           <small class="character-counter">
             {{ formulaire.description.length }}/2000 caractères
           </small>
+
         </div>
 
       </div>
 
-      <!-- Boutons du formulaire -->
       <div class="form-actions">
 
         <button
@@ -415,7 +475,6 @@
           Annuler
         </button>
 
-        <!-- Le clic appelle directement la méthode -->
         <button
           type="button"
           class="btn-primary"
@@ -429,30 +488,42 @@
         </button>
 
       </div>
+
     </form>
+
   </section>
 
-  <!-- Liste -->
+  <!-- LISTE -->
   <section class="list-card">
 
     <div class="list-header">
+
       <div>
-        <h2>Liste des demandes</h2>
+
+        <h2>
+          Liste des demandes
+        </h2>
 
         <p>
           {{ demandesFiltrees.length }}
           demande(s) affichée(s)
         </p>
+
       </div>
 
       <div class="search-box">
+
+        <i class="ti ti-search"></i>
+
         <input
           type="search"
           [(ngModel)]="recherche"
           (ngModelChange)="filtrerDemandes()"
           placeholder="Rechercher une demande..."
         />
+
       </div>
+
     </div>
 
     <div
@@ -479,8 +550,11 @@
       "
       class="table-container"
     >
+
       <table>
+
         <thead>
+
           <tr>
             <th>Référence</th>
             <th>Demande</th>
@@ -490,25 +564,33 @@
             <th>Statut</th>
             <th>Agent</th>
             <th>Date</th>
+
             <th class="actions-column">
               Actions
             </th>
           </tr>
+
         </thead>
 
         <tbody>
-          <tr *ngFor="let demande of demandesFiltrees">
+
+          <tr
+            *ngFor="let demande of demandesFiltrees"
+          >
 
             <td>
+
               <strong class="reference">
                 {{
                   demande.referenceDemande ||
-                  'Sans référence'
+                  ('DEM-' + demande.id)
                 }}
               </strong>
+
             </td>
 
             <td>
+
               <div class="demande-title">
                 {{ demande.titre }}
               </div>
@@ -516,6 +598,7 @@
               <div class="demande-description">
                 {{ demande.description }}
               </div>
+
             </td>
 
             <td>
@@ -527,6 +610,7 @@
             </td>
 
             <td>
+
               <span
                 class="badge"
                 [ngClass]="
@@ -536,9 +620,11 @@
               >
                 {{ afficherValeurEnum(demande.priorite) }}
               </span>
+
             </td>
 
             <td>
+
               <span
                 class="badge"
                 [ngClass]="
@@ -548,42 +634,182 @@
               >
                 {{ afficherValeurEnum(demande.statut) }}
               </span>
+
             </td>
 
             <td>
               {{ nomAgent(demande) }}
             </td>
 
-            <td>
+            <td class="date-column">
+
               {{
                 demande.dateCreation
                   | date: 'dd/MM/yyyy HH:mm'
               }}
+
             </td>
 
             <td class="actions">
+
+              <!-- PDF -->
+              <button
+                type="button"
+                class="btn-pdf"
+                (click)="genererPdf(demande)"
+              >
+                <i class="ti ti-file-type-pdf"></i>
+
+                PDF
+              </button>
+
+              <!-- QR CODE -->
+              <button
+                type="button"
+                class="btn-qr"
+                (click)="ouvrirQrCode(demande)"
+                [disabled]="qrChargement"
+              >
+                <i class="ti ti-qrcode"></i>
+
+                QR
+              </button>
+
+              <!-- MODIFIER -->
               <button
                 type="button"
                 class="btn-edit"
                 (click)="ouvrirModification(demande)"
               >
+                <i class="ti ti-edit"></i>
+
                 Modifier
               </button>
 
+              <!-- SUPPRIMER -->
               <button
                 type="button"
                 class="btn-delete"
                 (click)="supprimerDemande(demande)"
               >
+                <i class="ti ti-trash"></i>
+
                 Supprimer
               </button>
+
             </td>
 
           </tr>
+
         </tbody>
+
       </table>
+
     </div>
 
   </section>
+
+</div>
+
+
+<!-- =========================================
+     FENÊTRE QR CODE
+========================================= -->
+
+<div
+  *ngIf="qrVisible"
+  class="qr-overlay"
+  (click)="fermerQrCode()"
+>
+
+  <div
+    class="qr-modal"
+    role="dialog"
+    aria-modal="true"
+    (click)="$event.stopPropagation()"
+  >
+
+    <div class="qr-modal-header">
+
+      <div>
+
+        <p class="qr-small-title">
+          CLIENTFLOW
+        </p>
+
+        <h2>
+          QR Code de la demande
+        </h2>
+
+      </div>
+
+      <button
+        type="button"
+        class="qr-close"
+        (click)="fermerQrCode()"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="qr-modal-body">
+
+      <div class="qr-reference">
+
+        <span>
+          Référence
+        </span>
+
+        <strong>
+          {{ qrReference }}
+        </strong>
+
+      </div>
+
+      <div class="qr-image-container">
+
+        <img
+          [src]="qrCodeDataUrl"
+          alt="QR Code de la demande"
+          class="qr-image"
+        />
+
+      </div>
+
+      <h3>
+        {{ qrTitre }}
+      </h3>
+
+      <p class="qr-information">
+        Scannez ce QR Code pour consulter
+        les informations essentielles de la demande.
+      </p>
+
+    </div>
+
+    <div class="qr-modal-actions">
+
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="fermerQrCode()"
+      >
+        Fermer
+      </button>
+
+      <button
+        type="button"
+        class="btn-download-qr"
+        (click)="telechargerQrCode()"
+      >
+        <i class="ti ti-download"></i>
+
+        Télécharger le QR Code
+      </button>
+
+    </div>
+
+  </div>
 
 </div>

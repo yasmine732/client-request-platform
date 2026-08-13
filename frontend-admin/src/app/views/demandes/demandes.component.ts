@@ -11,6 +11,9 @@ import {
   NgForm
 } from '@angular/forms';
 
+import { jsPDF } from 'jspdf';
+import * as QRCode from 'qrcode';
+
 import {
   ClientResume,
   Demande,
@@ -52,6 +55,16 @@ export class DemandesComponent implements OnInit {
   messageSucces = '';
   messageErreur = '';
 
+  /*
+   * QR CODE
+   */
+  qrVisible = false;
+  qrChargement = false;
+
+  qrCodeDataUrl = '';
+  qrReference = '';
+  qrTitre = '';
+
   priorites: Priorite[] = [
     'BASSE',
     'MOYENNE',
@@ -80,27 +93,39 @@ export class DemandesComponent implements OnInit {
     this.chargerDemandes();
   }
 
+  /*
+   * =====================================================
+   * CHARGEMENT
+   * =====================================================
+   */
+
   chargerDemandes(): void {
+
     this.chargement = true;
 
     this.demandeService
       .getDemandes()
       .subscribe({
+
         next: (demandes: Demande[]) => {
+
           this.demandes = demandes;
+
           this.filtrerDemandes();
+
           this.chargement = false;
 
           this.changeDetectorRef.detectChanges();
         },
 
         error: (erreur: unknown) => {
+
           console.error(erreur);
 
           this.messageSucces = '';
 
           this.messageErreur =
-            'Impossible de charger les demandes. Vérifie que le backend fonctionne.';
+            'Impossible de charger les demandes. Vérifiez que le backend fonctionne.';
 
           this.chargement = false;
 
@@ -110,19 +135,24 @@ export class DemandesComponent implements OnInit {
   }
 
   chargerClients(): void {
+
     this.demandeService
       .getClients()
       .subscribe({
+
         next: (clients: ClientResume[]) => {
-          this.clients = clients.filter(
-            (client: ClientResume) =>
-              client.actif
-          );
+
+          this.clients =
+            clients.filter(
+              (client: ClientResume) =>
+                client.actif
+            );
 
           this.changeDetectorRef.detectChanges();
         },
 
         error: (erreur: unknown) => {
+
           console.error(erreur);
 
           this.messageSucces = '';
@@ -135,7 +165,14 @@ export class DemandesComponent implements OnInit {
       });
   }
 
+  /*
+   * =====================================================
+   * FORMULAIRE
+   * =====================================================
+   */
+
   ouvrirAjout(): void {
+
     this.modeModification = false;
     this.soumissionEffectuee = false;
     this.demandeSelectionneeId = null;
@@ -152,6 +189,7 @@ export class DemandesComponent implements OnInit {
   ouvrirModification(
     demande: Demande
   ): void {
+
     if (demande.id === undefined) {
       return;
     }
@@ -163,12 +201,24 @@ export class DemandesComponent implements OnInit {
       demande.id;
 
     this.formulaire = {
-      titre: demande.titre,
-      description: demande.description,
-      categorie: demande.categorie,
-      priorite: demande.priorite,
-      statut: demande.statut,
-      clientId: demande.client?.id ?? null
+
+      titre:
+        demande.titre,
+
+      description:
+        demande.description,
+
+      categorie:
+        demande.categorie,
+
+      priorite:
+        demande.priorite,
+
+      statut:
+        demande.statut,
+
+      clientId:
+        demande.client?.id ?? null
     };
 
     this.formulaireVisible = true;
@@ -182,8 +232,11 @@ export class DemandesComponent implements OnInit {
   }
 
   private reinitialiserFormulaire(): void {
+
     this.formulaireVisible = false;
+
     this.modeModification = false;
+
     this.soumissionEffectuee = false;
 
     this.demandeSelectionneeId = null;
@@ -199,6 +252,7 @@ export class DemandesComponent implements OnInit {
   enregistrerDemande(
     demandeForm: NgForm
   ): void {
+
     this.messageErreur = '';
     this.messageSucces = '';
     this.soumissionEffectuee = true;
@@ -206,6 +260,7 @@ export class DemandesComponent implements OnInit {
     demandeForm.form.markAllAsTouched();
 
     if (this.formulaireInvalide()) {
+
       this.messageErreur =
         'Veuillez remplir correctement tous les champs obligatoires.';
 
@@ -213,6 +268,7 @@ export class DemandesComponent implements OnInit {
     }
 
     const demandeRequest: DemandeRequest = {
+
       titre:
         this.formulaire.titre.trim(),
 
@@ -229,22 +285,30 @@ export class DemandesComponent implements OnInit {
         this.formulaire.statut,
 
       client: {
-        id: this.formulaire.clientId as number,
-        actif: true
+
+        id:
+          this.formulaire.clientId as number,
+
+        actif:
+          true
       },
 
-      agentResponsable: null
+      agentResponsable:
+        null
     };
 
     if (
       this.modeModification &&
       this.demandeSelectionneeId !== null
     ) {
+
       this.modifierDemande(
         this.demandeSelectionneeId,
         demandeRequest
       );
+
     } else {
+
       this.ajouterDemande(
         demandeRequest
       );
@@ -254,13 +318,18 @@ export class DemandesComponent implements OnInit {
   ajouterDemande(
     demandeRequest: DemandeRequest
   ): void {
+
     this.messageErreur = '';
     this.messageSucces = '';
 
     this.demandeService
-      .ajouterDemande(demandeRequest)
+      .ajouterDemande(
+        demandeRequest
+      )
       .subscribe({
+
         next: () => {
+
           this.reinitialiserFormulaire();
 
           this.messageErreur = '';
@@ -274,6 +343,7 @@ export class DemandesComponent implements OnInit {
         },
 
         error: (erreur: any) => {
+
           console.error(erreur);
 
           this.messageSucces = '';
@@ -291,6 +361,7 @@ export class DemandesComponent implements OnInit {
     id: number,
     demandeRequest: DemandeRequest
   ): void {
+
     this.messageErreur = '';
     this.messageSucces = '';
 
@@ -300,7 +371,9 @@ export class DemandesComponent implements OnInit {
         demandeRequest
       )
       .subscribe({
+
         next: () => {
+
           this.reinitialiserFormulaire();
 
           this.messageErreur = '';
@@ -314,6 +387,7 @@ export class DemandesComponent implements OnInit {
         },
 
         error: (erreur: any) => {
+
           console.error(erreur);
 
           this.messageSucces = '';
@@ -330,6 +404,7 @@ export class DemandesComponent implements OnInit {
   supprimerDemande(
     demande: Demande
   ): void {
+
     if (demande.id === undefined) {
       return;
     }
@@ -350,9 +425,13 @@ export class DemandesComponent implements OnInit {
     this.messageSucces = '';
 
     this.demandeService
-      .supprimerDemande(demande.id)
+      .supprimerDemande(
+        demande.id
+      )
       .subscribe({
+
         next: () => {
+
           this.messageErreur = '';
 
           this.messageSucces =
@@ -364,6 +443,7 @@ export class DemandesComponent implements OnInit {
         },
 
         error: (erreur: any) => {
+
           console.error(erreur);
 
           this.messageSucces = '';
@@ -377,7 +457,838 @@ export class DemandesComponent implements OnInit {
       });
   }
 
+  /*
+   * =====================================================
+   * QR CODE
+   * =====================================================
+   */
+
+  async ouvrirQrCode(
+    demande: Demande
+  ): Promise<void> {
+
+    this.qrChargement = true;
+
+    this.messageErreur = '';
+
+    try {
+
+      const reference =
+        this.referenceDemande(
+          demande
+        );
+
+      const contenuQr =
+        this.construireContenuQr(
+          demande
+        );
+
+      this.qrCodeDataUrl =
+        await QRCode.toDataURL(
+          contenuQr,
+          {
+            width: 340,
+            margin: 2,
+            errorCorrectionLevel: 'M'
+          }
+        );
+
+      this.qrReference =
+        reference;
+
+      this.qrTitre =
+        demande.titre;
+
+      this.qrVisible =
+        true;
+
+      this.changeDetectorRef
+        .detectChanges();
+
+    } catch (erreur) {
+
+      console.error(
+        'Erreur QR Code :',
+        erreur
+      );
+
+      this.messageSucces = '';
+
+      this.messageErreur =
+        'Impossible de générer le QR Code.';
+
+    } finally {
+
+      this.qrChargement =
+        false;
+
+      this.changeDetectorRef
+        .detectChanges();
+    }
+  }
+
+  fermerQrCode(): void {
+
+    this.qrVisible = false;
+
+    this.qrCodeDataUrl = '';
+
+    this.qrReference = '';
+
+    this.qrTitre = '';
+  }
+
+  telechargerQrCode(): void {
+
+    if (!this.qrCodeDataUrl) {
+      return;
+    }
+
+    const lien =
+      document.createElement(
+        'a'
+      );
+
+    const referenceFichier =
+      this.qrReference
+        .replace(
+          /[^a-zA-Z0-9-_]/g,
+          '-'
+        );
+
+    lien.href =
+      this.qrCodeDataUrl;
+
+    lien.download =
+      `ClientFlow-QR-${referenceFichier}.png`;
+
+    document.body
+      .appendChild(
+        lien
+      );
+
+    lien.click();
+
+    document.body
+      .removeChild(
+        lien
+      );
+
+    this.messageErreur = '';
+
+    this.messageSucces =
+      `QR Code de la demande ${this.qrReference} téléchargé avec succès.`;
+
+    this.changeDetectorRef
+      .detectChanges();
+  }
+
+  private construireContenuQr(
+    demande: Demande
+  ): string {
+
+    const reference =
+      this.referenceDemande(
+        demande
+      );
+
+    return [
+      'ClientFlow',
+      `Référence : ${reference}`,
+      `Titre : ${demande.titre}`,
+      `Statut : ${this.afficherValeurEnum(demande.statut)}`,
+      `Priorité : ${this.afficherValeurEnum(demande.priorite)}`
+    ].join('\n');
+  }
+
+  /*
+   * =====================================================
+   * PDF
+   * =====================================================
+   */
+
+  genererPdf(
+    demande: Demande
+  ): void {
+
+    try {
+
+      const pdf =
+        new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4'
+        });
+
+      const largeurPage =
+        pdf.internal.pageSize.getWidth();
+
+      const hauteurPage =
+        pdf.internal.pageSize.getHeight();
+
+      const marge = 18;
+
+      const largeurContenu =
+        largeurPage -
+        marge * 2;
+
+      const reference =
+        this.referenceDemande(
+          demande
+        );
+
+      /*
+       * EN-TÊTE
+       */
+
+      pdf.setFillColor(
+        103,
+        65,
+        190
+      );
+
+      pdf.rect(
+        0,
+        0,
+        largeurPage,
+        42,
+        'F'
+      );
+
+      pdf.setTextColor(
+        255,
+        255,
+        255
+      );
+
+      pdf.setFont(
+        'helvetica',
+        'bold'
+      );
+
+      pdf.setFontSize(
+        23
+      );
+
+      pdf.text(
+        'ClientFlow',
+        marge,
+        17
+      );
+
+      pdf.setFont(
+        'helvetica',
+        'normal'
+      );
+
+      pdf.setFontSize(
+        10
+      );
+
+      pdf.text(
+        'Plateforme de suivi des demandes clients',
+        marge,
+        25
+      );
+
+      pdf.setFont(
+        'helvetica',
+        'bold'
+      );
+
+      pdf.setFontSize(
+        9
+      );
+
+      pdf.text(
+        'FICHE DE DEMANDE',
+        largeurPage - marge,
+        17,
+        {
+          align: 'right'
+        }
+      );
+
+      pdf.setFont(
+        'helvetica',
+        'normal'
+      );
+
+      pdf.setFontSize(
+        8
+      );
+
+      pdf.text(
+        reference,
+        largeurPage - marge,
+        24,
+        {
+          align: 'right'
+        }
+      );
+
+      /*
+       * TITRE
+       */
+
+      pdf.setTextColor(
+        30,
+        36,
+        48
+      );
+
+      pdf.setFont(
+        'helvetica',
+        'bold'
+      );
+
+      pdf.setFontSize(
+        18
+      );
+
+      pdf.text(
+        'Détails de la demande',
+        marge,
+        57
+      );
+
+      pdf.setFontSize(
+        9
+      );
+
+      pdf.setTextColor(
+        103,
+        65,
+        190
+      );
+
+      pdf.text(
+        reference,
+        marge,
+        65
+      );
+
+      pdf.setDrawColor(
+        225,
+        228,
+        235
+      );
+
+      pdf.line(
+        marge,
+        71,
+        largeurPage - marge,
+        71
+      );
+
+      /*
+       * INFORMATIONS
+       */
+
+      let y = 83;
+
+      y = this.ajouterChampPdf(
+        pdf,
+        'Client',
+        this.nomClient(
+          demande.client
+        ),
+        y
+      );
+
+      y = this.ajouterChampPdf(
+        pdf,
+        'E-mail',
+        demande.client?.email ||
+          'Non renseigné',
+        y
+      );
+
+      y = this.ajouterChampPdf(
+        pdf,
+        'Catégorie',
+        demande.categorie ||
+          'Non renseignée',
+        y
+      );
+
+      y = this.ajouterChampPdf(
+        pdf,
+        'Priorité',
+        this.afficherValeurEnum(
+          demande.priorite
+        ),
+        y
+      );
+
+      y = this.ajouterChampPdf(
+        pdf,
+        'Statut',
+        this.afficherValeurEnum(
+          demande.statut
+        ),
+        y
+      );
+
+      y = this.ajouterChampPdf(
+        pdf,
+        'Agent responsable',
+        this.nomAgent(
+          demande
+        ),
+        y
+      );
+
+      y = this.ajouterChampPdf(
+        pdf,
+        'Date de création',
+        this.formatDatePdf(
+          demande.dateCreation
+        ),
+        y
+      );
+
+      /*
+       * TITRE DEMANDE
+       */
+
+      y += 7;
+
+      pdf.setFillColor(
+        247,
+        246,
+        252
+      );
+
+      const lignesTitre =
+        pdf.splitTextToSize(
+          demande.titre ||
+            'Sans titre',
+          largeurContenu - 12
+        );
+
+      const hauteurTitre =
+        Math.max(
+          28,
+          18 +
+          lignesTitre.length * 5
+        );
+
+      pdf.roundedRect(
+        marge,
+        y,
+        largeurContenu,
+        hauteurTitre,
+        3,
+        3,
+        'F'
+      );
+
+      pdf.setTextColor(
+        103,
+        65,
+        190
+      );
+
+      pdf.setFont(
+        'helvetica',
+        'bold'
+      );
+
+      pdf.setFontSize(
+        8
+      );
+
+      pdf.text(
+        'TITRE DE LA DEMANDE',
+        marge + 6,
+        y + 8
+      );
+
+      pdf.setTextColor(
+        30,
+        36,
+        48
+      );
+
+      pdf.setFontSize(
+        11
+      );
+
+      pdf.text(
+        lignesTitre,
+        marge + 6,
+        y + 17
+      );
+
+      y +=
+        hauteurTitre + 13;
+
+      /*
+       * DESCRIPTION
+       */
+
+      pdf.setTextColor(
+        103,
+        65,
+        190
+      );
+
+      pdf.setFont(
+        'helvetica',
+        'bold'
+      );
+
+      pdf.setFontSize(
+        9
+      );
+
+      pdf.text(
+        'DESCRIPTION',
+        marge,
+        y
+      );
+
+      y += 8;
+
+      pdf.setTextColor(
+        45,
+        51,
+        63
+      );
+
+      pdf.setFont(
+        'helvetica',
+        'normal'
+      );
+
+      pdf.setFontSize(
+        10
+      );
+
+      const description =
+        demande.description ||
+        'Aucune description.';
+
+      const lignesDescription =
+        pdf.splitTextToSize(
+          description,
+          largeurContenu
+        );
+
+      const hauteurDescription =
+        lignesDescription.length * 5;
+
+      if (
+        y +
+        hauteurDescription >
+        hauteurPage - 28
+      ) {
+
+        const premierePartie =
+          lignesDescription.slice(
+            0,
+            20
+          );
+
+        const deuxiemePartie =
+          lignesDescription.slice(
+            20
+          );
+
+        pdf.text(
+          premierePartie,
+          marge,
+          y
+        );
+
+        if (
+          deuxiemePartie.length > 0
+        ) {
+
+          pdf.addPage();
+
+          y = 25;
+
+          pdf.setTextColor(
+            103,
+            65,
+            190
+          );
+
+          pdf.setFont(
+            'helvetica',
+            'bold'
+          );
+
+          pdf.setFontSize(
+            9
+          );
+
+          pdf.text(
+            'DESCRIPTION - SUITE',
+            marge,
+            y
+          );
+
+          y += 8;
+
+          pdf.setTextColor(
+            45,
+            51,
+            63
+          );
+
+          pdf.setFont(
+            'helvetica',
+            'normal'
+          );
+
+          pdf.setFontSize(
+            10
+          );
+
+          pdf.text(
+            deuxiemePartie,
+            marge,
+            y
+          );
+        }
+
+      } else {
+
+        pdf.text(
+          lignesDescription,
+          marge,
+          y
+        );
+      }
+
+      /*
+       * PIED DE PAGE
+       */
+
+      const nombrePages =
+        pdf.getNumberOfPages();
+
+      for (
+        let page = 1;
+        page <= nombrePages;
+        page++
+      ) {
+
+        pdf.setPage(
+          page
+        );
+
+        pdf.setDrawColor(
+          225,
+          228,
+          235
+        );
+
+        pdf.line(
+          marge,
+          hauteurPage - 18,
+          largeurPage - marge,
+          hauteurPage - 18
+        );
+
+        pdf.setTextColor(
+          130,
+          136,
+          148
+        );
+
+        pdf.setFont(
+          'helvetica',
+          'normal'
+        );
+
+        pdf.setFontSize(
+          8
+        );
+
+        pdf.text(
+          'Document généré depuis ClientFlow',
+          marge,
+          hauteurPage - 11
+        );
+
+        pdf.text(
+          `Page ${page}/${nombrePages}`,
+          largeurPage - marge,
+          hauteurPage - 11,
+          {
+            align: 'right'
+          }
+        );
+      }
+
+      const nomFichier =
+        reference.replace(
+          /[^a-zA-Z0-9-_]/g,
+          '-'
+        );
+
+      pdf.save(
+        `ClientFlow-${nomFichier}.pdf`
+      );
+
+      this.messageErreur = '';
+
+      this.messageSucces =
+        `PDF de la demande ${reference} généré avec succès.`;
+
+      this.changeDetectorRef
+        .detectChanges();
+
+    } catch (erreur) {
+
+      console.error(
+        'Erreur génération PDF :',
+        erreur
+      );
+
+      this.messageSucces = '';
+
+      this.messageErreur =
+        'Impossible de générer le PDF.';
+
+      this.changeDetectorRef
+        .detectChanges();
+    }
+  }
+
+  private ajouterChampPdf(
+    pdf: jsPDF,
+    libelle: string,
+    valeur: string,
+    y: number
+  ): number {
+
+    pdf.setFont(
+      'helvetica',
+      'bold'
+    );
+
+    pdf.setFontSize(
+      9
+    );
+
+    pdf.setTextColor(
+      105,
+      112,
+      125
+    );
+
+    pdf.text(
+      `${libelle} :`,
+      18,
+      y
+    );
+
+    pdf.setFont(
+      'helvetica',
+      'normal'
+    );
+
+    pdf.setTextColor(
+      35,
+      43,
+      57
+    );
+
+    const lignes =
+      pdf.splitTextToSize(
+        valeur || '-',
+        128
+      );
+
+    pdf.text(
+      lignes,
+      58,
+      y
+    );
+
+    return (
+      y +
+      Math.max(
+        9,
+        lignes.length * 5
+      )
+    );
+  }
+
+  /*
+   * =====================================================
+   * MÉTHODES COMMUNES PDF / QR
+   * =====================================================
+   */
+
+  private referenceDemande(
+    demande: Demande
+  ): string {
+
+    if (
+      demande.referenceDemande
+    ) {
+
+      return demande
+        .referenceDemande;
+    }
+
+    if (
+      demande.id !== undefined
+    ) {
+
+      return `DEM-${demande.id}`;
+    }
+
+    return 'DEMANDE';
+  }
+
+  private formatDatePdf(
+    date?: string
+  ): string {
+
+    if (!date) {
+      return 'Non renseignée';
+    }
+
+    const valeur =
+      new Date(date);
+
+    if (
+      Number.isNaN(
+        valeur.getTime()
+      )
+    ) {
+
+      return date;
+    }
+
+    return valeur
+      .toLocaleString(
+        'fr-FR',
+        {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }
+      );
+  }
+
+  /*
+   * =====================================================
+   * VALIDATION
+   * =====================================================
+   */
+
   formulaireInvalide(): boolean {
+
     return (
       this.formulaire.clientId === null ||
       this.titreVide() ||
@@ -393,6 +1304,7 @@ export class DemandesComponent implements OnInit {
   }
 
   titreVide(): boolean {
+
     return (
       this.formulaire.titre
         .trim()
@@ -401,6 +1313,7 @@ export class DemandesComponent implements OnInit {
   }
 
   titreTropCourt(): boolean {
+
     const longueur =
       this.formulaire.titre
         .trim()
@@ -413,6 +1326,7 @@ export class DemandesComponent implements OnInit {
   }
 
   titreTropLong(): boolean {
+
     return (
       this.formulaire.titre
         .trim()
@@ -421,6 +1335,7 @@ export class DemandesComponent implements OnInit {
   }
 
   categorieVide(): boolean {
+
     return (
       this.formulaire.categorie
         .trim()
@@ -429,6 +1344,7 @@ export class DemandesComponent implements OnInit {
   }
 
   categorieTropCourte(): boolean {
+
     const longueur =
       this.formulaire.categorie
         .trim()
@@ -441,6 +1357,7 @@ export class DemandesComponent implements OnInit {
   }
 
   categorieTropLongue(): boolean {
+
     return (
       this.formulaire.categorie
         .trim()
@@ -449,6 +1366,7 @@ export class DemandesComponent implements OnInit {
   }
 
   descriptionVide(): boolean {
+
     return (
       this.formulaire.description
         .trim()
@@ -457,6 +1375,7 @@ export class DemandesComponent implements OnInit {
   }
 
   descriptionTropCourte(): boolean {
+
     const longueur =
       this.formulaire.description
         .trim()
@@ -469,6 +1388,7 @@ export class DemandesComponent implements OnInit {
   }
 
   descriptionTropLongue(): boolean {
+
     return (
       this.formulaire.description
         .trim()
@@ -476,13 +1396,21 @@ export class DemandesComponent implements OnInit {
     );
   }
 
+  /*
+   * =====================================================
+   * RECHERCHE
+   * =====================================================
+   */
+
   filtrerDemandes(): void {
+
     const texte =
       this.recherche
         .trim()
         .toLowerCase();
 
     if (!texte) {
+
       this.demandesFiltrees = [
         ...this.demandes
       ];
@@ -493,6 +1421,7 @@ export class DemandesComponent implements OnInit {
     this.demandesFiltrees =
       this.demandes.filter(
         (demande: Demande) => {
+
           const client =
             this.nomClient(
               demande.client
@@ -500,40 +1429,62 @@ export class DemandesComponent implements OnInit {
 
           const reference =
             demande.referenceDemande
-              ?.toLowerCase() || '';
+              ?.toLowerCase() ||
+            '';
 
           return (
-            reference.includes(texte) ||
+            reference.includes(
+              texte
+            ) ||
 
             demande.titre
               .toLowerCase()
-              .includes(texte) ||
+              .includes(
+                texte
+              ) ||
 
             demande.description
               .toLowerCase()
-              .includes(texte) ||
+              .includes(
+                texte
+              ) ||
 
             demande.categorie
               .toLowerCase()
-              .includes(texte) ||
+              .includes(
+                texte
+              ) ||
 
             demande.priorite
               .toLowerCase()
-              .includes(texte) ||
+              .includes(
+                texte
+              ) ||
 
             demande.statut
               .toLowerCase()
-              .includes(texte) ||
+              .includes(
+                texte
+              ) ||
 
-            client.includes(texte)
+            client.includes(
+              texte
+            )
           );
         }
       );
   }
 
+  /*
+   * =====================================================
+   * AFFICHAGE
+   * =====================================================
+   */
+
   nomClient(
     client?: ClientResume
   ): string {
+
     if (!client) {
       return 'Client inconnu';
     }
@@ -543,7 +1494,9 @@ export class DemandesComponent implements OnInit {
         'ENTREPRISE' &&
       client.raisonSociale
     ) {
-      return client.raisonSociale;
+
+      return client
+        .raisonSociale;
     }
 
     const nomComplet = [
@@ -563,6 +1516,7 @@ export class DemandesComponent implements OnInit {
   nomAgent(
     demande: Demande
   ): string {
+
     const agent =
       demande.agentResponsable;
 
@@ -587,8 +1541,12 @@ export class DemandesComponent implements OnInit {
   afficherValeurEnum(
     valeur: string
   ): string {
+
     return valeur
-      .replace(/_/g, ' ')
+      .replace(
+        /_/g,
+        ' '
+      )
       .toLowerCase()
       .replace(
         /\b\w/g,
@@ -598,21 +1556,38 @@ export class DemandesComponent implements OnInit {
   }
 
   nombreDemandesNouvelles(): number {
-    return this.demandes.filter(
-      (demande: Demande) =>
-        demande.statut === 'NOUVELLE'
-    ).length;
+
+    return this.demandes
+      .filter(
+        (demande: Demande) =>
+          demande.statut ===
+          'NOUVELLE'
+      )
+      .length;
   }
 
   private creerFormulaireVide():
     DemandeForm {
+
     return {
-      titre: '',
-      description: '',
-      categorie: '',
-      priorite: 'MOYENNE',
-      statut: 'NOUVELLE',
-      clientId: null
+
+      titre:
+        '',
+
+      description:
+        '',
+
+      categorie:
+        '',
+
+      priorite:
+        'MOYENNE',
+
+      statut:
+        'NOUVELLE',
+
+      clientId:
+        null
     };
   }
 }

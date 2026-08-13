@@ -1,126 +1,887 @@
-<div class="row">
-  <div class="col-xl-4 col-md-6">
-    <div class="card earning-card bg-secondary-dark text-white overflow-hidden">
-      <span class="round secondary-round small"></span>
-      <span class="round secondary-round big"></span>
-      <div class="card-body">
-        <div class="row">
-          <div class="col">
-            <div class="avatar avatar-lg">
-              <i class="text-white ti ti-credit-card f-24"></i>
-            </div>
-          </div>
-          <div class="col-auto">
-            <div class="btn-group" ngbDropdown>
-              <a type="button" class="avatar avatar-xs bg-secondary arrow-none" ngbDropdownToggle>
-                <i class="ti ti-dots"></i>
-              </a>
-              <ul class="dropdown-menu-end" ngbDropdownMenu>
-                <li><button class="dropdown-item" type="button">Import Card</button></li>
-                <li><button class="dropdown-item" type="button">Export</button></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <span class="text-white d-block f-34 f-w-500 my-2">
-          $500.00
-          <i class="ti ti-circle-arrow-up-right opacity-50"></i>
-        </span>
-        <p class="mb-0 opacity-50">Total Earning</p>
-      </div>
-    </div>
-  </div>
-  <div class="col-xl-4 col-md-6">
-    <div class="card earning-card bg-primary-dark text-white overflow-hidden">
-      <span class="round primary-round small"></span>
-      <span class="round primary-round big"></span>
-      <div class="card-body">
-        <app-chart-data-month />
-      </div>
-    </div>
-  </div>
-  <div class="col-xl-4 col-md-12">
-    <div class="card total-income-card overflow-hidden bg-primary-dark text-white">
-      <div class="card-body">
-        <div class="d-flex align-items-center">
-          <div class="avatar avatar-lg icon m-r-5">
-            <i class="text-white ti ti-layout-board-split f-24"></i>
-          </div>
-          <div class="ms-2">
-            <h4 class="text-white f-w-600 mb-1">$203k</h4>
-            <p class="mb-0 opacity-50 text-sm">Total Income</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="card total-income-card warning overflow-hidden">
-      <div class="card-body">
-        <div class="d-flex align-items-center">
-          <div class="avatar avatar-lg icon-warning m-r-5">
-            <i class="text-warning ti ti-layout-board-split f-24"></i>
-          </div>
-          <div class="ms-2">
-            <h4 class="f-w-600 mb-1">$203k</h4>
-            <p class="mb-0 opacity-50 text-sm">Total Income</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="clientflow-dashboard">
 
-  <div class="col-xl-8 col-md-12">
-    <app-bar-chart />
-  </div>
-  <div class="col-xl-4 col-md-12">
-    <div class="card">
-      <div class="card-body">
-        <div class="row mb-3 align-items-center">
-          <div class="col">
-            <h4>Popular Stocks</h4>
-          </div>
-          <div class="col-auto"></div>
-        </div>
-        <div class="rounded bg-light-secondary overflow-hidden mb-3">
-          <div class="px-3 pt-3">
-            <div class="row mb-1 align-items-start">
-              <div class="col">
-                <h5 class="text-secondary mb-0">Bajaj Finery</h5>
-                <small class="text-muted">10% Profit</small>
-              </div>
-              <div class="col-auto">
-                <h4 class="mb-0">$1839.00</h4>
-              </div>
-            </div>
-          </div>
-          <app-bajaj-chart />
-        </div>
-        <ul class="list-group list-group-flush">
-          @for (list of ListGroup; track list) {
-          <li class="list-group-item px-0 {{ list.space }}">
-            <div class="row align-items-start">
-              <div class="col">
-                <h5 class="mb-0">{{ list.name }}</h5>
-                <small class="{{ list.color }}">{{ list.profit }}</small>
-              </div>
-              <div class="col-auto">
-                <h4 class="mb-0">
-                  {{ list.invest }}
-                  <span class="ms-2 align-top avatar avatar-xxs {{ list.bgColor }}">
-                    <i class="{{ list.icon }} {{ list.color }}"></i>
-                  </span>
-                </h4>
-              </div>
-            </div>
-          </li>
-          }
-        </ul>
-        <div class="text-center">
-          <a href="javascript:void(0)" class="b-b-primary text-primary f-w-500">
-            View all
-            <i class="ti ti-chevron-right"></i>
-          </a>
-        </div>
-      </div>
+  <!-- EN-TÊTE -->
+  <section class="dashboard-hero">
+
+    <div>
+
+      <span class="dashboard-label">
+        ADMINISTRATION CLIENTFLOW
+      </span>
+
+      <h2>
+        Tableau de bord
+      </h2>
+
+      <p>
+        Suivez l’activité de la plateforme,
+        les clients et le traitement des demandes.
+      </p>
+
     </div>
-  </div>
+
+    <div class="hero-actions">
+
+      <a
+        routerLink="/demandes"
+        class="btn btn-light"
+      >
+        <i class="ti ti-file-text me-2"></i>
+
+        Voir les demandes
+      </a>
+
+    </div>
+
+  </section>
+
+  <!-- ERREUR -->
+  @if (errorMessage) {
+
+    <div
+      class="alert alert-danger mt-4"
+    >
+      {{ errorMessage }}
+    </div>
+
+  }
+
+  <!-- CHARGEMENT -->
+  @if (isLoading) {
+
+    <div
+      class="dashboard-loading"
+    >
+
+      <div
+        class="spinner-border text-primary"
+        role="status"
+      ></div>
+
+      <span>
+        Chargement du tableau de bord...
+      </span>
+
+    </div>
+
+  } @else {
+
+    <!-- STATISTIQUES PRINCIPALES -->
+    <div class="row mt-4">
+
+      <!-- Clients -->
+      <div
+        class="col-xl-3 col-md-6"
+      >
+
+        <div
+          class="card metric-card"
+        >
+
+          <div class="card-body">
+
+            <div
+              class="metric-icon metric-clients"
+            >
+              <i
+                class="ti ti-address-book"
+              ></i>
+            </div>
+
+            <div class="metric-content">
+
+              <p>
+                Total clients
+              </p>
+
+              <h3>
+                {{ totalClients }}
+              </h3>
+
+              <a
+                routerLink="/clients"
+              >
+                Voir les clients
+              </a>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Demandes -->
+      <div
+        class="col-xl-3 col-md-6"
+      >
+
+        <div
+          class="card metric-card"
+        >
+
+          <div class="card-body">
+
+            <div
+              class="metric-icon metric-requests"
+            >
+              <i
+                class="ti ti-file-description"
+              ></i>
+            </div>
+
+            <div class="metric-content">
+
+              <p>
+                Total demandes
+              </p>
+
+              <h3>
+                {{ totalDemandes }}
+              </h3>
+
+              <a
+                routerLink="/demandes"
+              >
+                Voir les demandes
+              </a>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- En cours -->
+      <div
+        class="col-xl-3 col-md-6"
+      >
+
+        <div
+          class="card metric-card"
+        >
+
+          <div class="card-body">
+
+            <div
+              class="metric-icon metric-progress"
+            >
+              <i
+                class="ti ti-clock"
+              ></i>
+            </div>
+
+            <div class="metric-content">
+
+              <p>
+                Demandes en cours
+              </p>
+
+              <h3>
+                {{ demandesEnCours }}
+              </h3>
+
+              <span
+                class="metric-description"
+              >
+                Affectées ou en traitement
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Résolues -->
+      <div
+        class="col-xl-3 col-md-6"
+      >
+
+        <div
+          class="card metric-card"
+        >
+
+          <div class="card-body">
+
+            <div
+              class="metric-icon metric-resolved"
+            >
+              <i
+                class="ti ti-circle-check"
+              ></i>
+            </div>
+
+            <div class="metric-content">
+
+              <p>
+                Demandes résolues
+              </p>
+
+              <h3>
+                {{ demandesResolues }}
+              </h3>
+
+              <span
+                class="metric-description"
+              >
+                {{ tauxResolution }} %
+                de résolution
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- CONTENU PRINCIPAL -->
+    <div class="row">
+
+      <!-- DEMANDES RÉCENTES -->
+      <div
+        class="col-xl-8"
+      >
+
+        <div
+          class="card dashboard-card"
+        >
+
+          <div
+            class="card-header-custom"
+          >
+
+            <div>
+
+              <span
+                class="section-label"
+              >
+                ACTIVITÉ RÉCENTE
+              </span>
+
+              <h4>
+                Dernières demandes
+              </h4>
+
+              <p>
+                Les demandes les plus récemment
+                enregistrées sur ClientFlow.
+              </p>
+
+            </div>
+
+            <a
+              routerLink="/demandes"
+              class="view-all-link"
+            >
+              Voir toutes
+
+              <i
+                class="ti ti-arrow-right"
+              ></i>
+            </a>
+
+          </div>
+
+          @if (
+            dernieresDemandes.length > 0
+          ) {
+
+            <div
+              class="table-responsive"
+            >
+
+              <table
+                class="table dashboard-table"
+              >
+
+                <thead>
+
+                  <tr>
+
+                    <th>
+                      Demande
+                    </th>
+
+                    <th>
+                      Client
+                    </th>
+
+                    <th>
+                      Statut
+                    </th>
+
+                    <th>
+                      Priorité
+                    </th>
+
+                    <th>
+                      Date
+                    </th>
+
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  @for (
+                    demande of dernieresDemandes;
+                    track demande.id
+                  ) {
+
+                    <tr>
+
+                      <td>
+
+                        <div
+                          class="request-title"
+                        >
+                          {{ demande.titre }}
+                        </div>
+
+                        <small>
+
+                          @if (
+                            demande.referenceDemande
+                          ) {
+
+                            {{
+                              demande.referenceDemande
+                            }}
+
+                          } @else {
+
+                            #{{ demande.id }}
+
+                          }
+
+                        </small>
+
+                      </td>
+
+                      <td>
+
+                        {{
+                          getClientName(
+                            demande
+                          )
+                        }}
+
+                      </td>
+
+                      <td>
+
+                        <span
+                          class="status-badge"
+                          [class]="
+                            'status-badge ' +
+                            getStatutClass(
+                              demande.statut
+                            )
+                          "
+                        >
+                          {{
+                            getStatutLabel(
+                              demande.statut
+                            )
+                          }}
+                        </span>
+
+                      </td>
+
+                      <td>
+
+                        <span
+                          [class]="
+                            'priority-badge ' +
+                            getPrioriteClass(
+                              demande.priorite
+                            )
+                          "
+                        >
+                          {{
+                            demande.priorite
+                          }}
+                        </span>
+
+                      </td>
+
+                      <td>
+
+                        {{
+                          formatDate(
+                            demande.dateCreation
+                          )
+                        }}
+
+                      </td>
+
+                    </tr>
+
+                  }
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          } @else {
+
+            <div
+              class="empty-state"
+            >
+
+              <i
+                class="ti ti-file-description"
+              ></i>
+
+              <h5>
+                Aucune demande
+              </h5>
+
+              <p>
+                Les nouvelles demandes apparaîtront ici.
+              </p>
+
+            </div>
+
+          }
+
+        </div>
+
+      </div>
+
+      <!-- RÉPARTITION -->
+      <div
+        class="col-xl-4"
+      >
+
+        <div
+          class="card dashboard-card"
+        >
+
+          <div
+            class="card-header-custom"
+          >
+
+            <div>
+
+              <span
+                class="section-label"
+              >
+                SUIVI
+              </span>
+
+              <h4>
+                Répartition des demandes
+              </h4>
+
+              <p>
+                État actuel des demandes.
+              </p>
+
+            </div>
+
+          </div>
+
+          <div
+            class="status-distribution"
+          >
+
+            <!-- Nouvelles -->
+            <div
+              class="distribution-item"
+            >
+
+              <div
+                class="distribution-header"
+              >
+
+                <span>
+                  Nouvelles
+                </span>
+
+                <strong>
+                  {{ demandesNouvelles }}
+                </strong>
+
+              </div>
+
+              <div
+                class="progress-track"
+              >
+
+                <div
+                  class="progress-value progress-new"
+                  [style.width.%]="
+                    getPourcentage(
+                      demandesNouvelles
+                    )
+                  "
+                ></div>
+
+              </div>
+
+            </div>
+
+            <!-- En cours -->
+            <div
+              class="distribution-item"
+            >
+
+              <div
+                class="distribution-header"
+              >
+
+                <span>
+                  En cours
+                </span>
+
+                <strong>
+                  {{ demandesEnCours }}
+                </strong>
+
+              </div>
+
+              <div
+                class="progress-track"
+              >
+
+                <div
+                  class="progress-value progress-current"
+                  [style.width.%]="
+                    getPourcentage(
+                      demandesEnCours
+                    )
+                  "
+                ></div>
+
+              </div>
+
+            </div>
+
+            <!-- Résolues -->
+            <div
+              class="distribution-item"
+            >
+
+              <div
+                class="distribution-header"
+              >
+
+                <span>
+                  Résolues
+                </span>
+
+                <strong>
+                  {{ demandesResolues }}
+                </strong>
+
+              </div>
+
+              <div
+                class="progress-track"
+              >
+
+                <div
+                  class="progress-value progress-resolved"
+                  [style.width.%]="
+                    getPourcentage(
+                      demandesResolues
+                    )
+                  "
+                ></div>
+
+              </div>
+
+            </div>
+
+            <!-- Fermées -->
+            <div
+              class="distribution-item"
+            >
+
+              <div
+                class="distribution-header"
+              >
+
+                <span>
+                  Fermées
+                </span>
+
+                <strong>
+                  {{ demandesFermees }}
+                </strong>
+
+              </div>
+
+              <div
+                class="progress-track"
+              >
+
+                <div
+                  class="progress-value progress-closed"
+                  [style.width.%]="
+                    getPourcentage(
+                      demandesFermees
+                    )
+                  "
+                ></div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Résumé -->
+          <div
+            class="resolution-summary"
+          >
+
+            <div
+              class="resolution-circle"
+            >
+              {{ tauxResolution }}%
+            </div>
+
+            <div>
+
+              <strong>
+                Taux de résolution
+              </strong>
+
+              <p>
+                {{
+                  demandesResolues
+                }}
+                demande(s) résolue(s)
+                sur
+                {{
+                  totalDemandes
+                }}.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ACTIONS RAPIDES -->
+    <div
+      class="card dashboard-card"
+    >
+
+      <div
+        class="card-header-custom"
+      >
+
+        <div>
+
+          <span
+            class="section-label"
+          >
+            GESTION
+          </span>
+
+          <h4>
+            Accès rapides
+          </h4>
+
+          <p>
+            Accédez rapidement aux principaux
+            modules de ClientFlow.
+          </p>
+
+        </div>
+
+      </div>
+
+      <div class="quick-actions">
+
+        <a
+          routerLink="/users"
+          class="quick-action"
+        >
+
+          <span
+            class="quick-icon"
+          >
+            <i
+              class="ti ti-users"
+            ></i>
+          </span>
+
+          <div>
+
+            <strong>
+              Utilisateurs
+            </strong>
+
+            <small>
+              Gérer les administrateurs
+              et agents
+            </small>
+
+          </div>
+
+          <i
+            class="ti ti-chevron-right quick-arrow"
+          ></i>
+
+        </a>
+
+        <a
+          routerLink="/clients"
+          class="quick-action"
+        >
+
+          <span
+            class="quick-icon"
+          >
+            <i
+              class="ti ti-address-book"
+            ></i>
+          </span>
+
+          <div>
+
+            <strong>
+              Clients
+            </strong>
+
+            <small>
+              Consulter et gérer les clients
+            </small>
+
+          </div>
+
+          <i
+            class="ti ti-chevron-right quick-arrow"
+          ></i>
+
+        </a>
+
+        <a
+          routerLink="/demandes"
+          class="quick-action"
+        >
+
+          <span
+            class="quick-icon"
+          >
+            <i
+              class="ti ti-file-description"
+            ></i>
+          </span>
+
+          <div>
+
+            <strong>
+              Demandes
+            </strong>
+
+            <small>
+              Suivre le traitement des demandes
+            </small>
+
+          </div>
+
+          <i
+            class="ti ti-chevron-right quick-arrow"
+          ></i>
+
+        </a>
+
+      </div>
+
+    </div>
+
+    <!-- INFORMATIONS COMPLÉMENTAIRES -->
+    <div class="row">
+
+      <div
+        class="col-md-6"
+      >
+
+        <div
+          class="card small-info-card"
+        >
+
+          <div
+            class="small-info-icon"
+          >
+            <i
+              class="ti ti-user-check"
+            ></i>
+          </div>
+
+          <div>
+
+            <span>
+              Agents actifs
+            </span>
+
+            <strong>
+              {{ agentsActifs }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div
+        class="col-md-6"
+      >
+
+        <div
+          class="card small-info-card"
+        >
+
+          <div
+            class="small-info-icon green"
+          >
+            <i
+              class="ti ti-progress-check"
+            ></i>
+          </div>
+
+          <div>
+
+            <span>
+              Taux de résolution
+            </span>
+
+            <strong>
+              {{ tauxResolution }} %
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
 </div>

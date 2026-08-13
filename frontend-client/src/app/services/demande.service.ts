@@ -44,7 +44,8 @@ export class DemandeService {
       map((demandes) =>
         demandes.filter(
           (demande) =>
-            demande.client?.id === clientId
+            Number(demande.client?.id) ===
+            Number(clientId)
         )
       )
     );

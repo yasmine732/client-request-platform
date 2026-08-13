@@ -1,4 +1,4 @@
-﻿import {
+import {
   HttpClient,
 } from '@angular/common/http';
 
@@ -10,32 +10,10 @@ import {
   Observable,
 } from 'rxjs';
 
-export type TypeClient =
-  | 'PARTICULIER'
-  | 'ENTREPRISE';
-
 export type Role =
   | 'ADMIN'
   | 'AGENT'
   | 'CLIENT';
-
-export interface RegisterClientRequest {
-  typeClient: TypeClient;
-  nom: string;
-  prenom: string;
-  email: string;
-  telephone: string;
-  motDePasse: string;
-}
-
-export interface RegisterClientResponse {
-  userId: number;
-  clientId: number;
-  referenceClient: string;
-  email: string;
-  role: Role;
-  message: string;
-}
 
 export interface LoginRequest {
   email: string;
@@ -55,35 +33,23 @@ export interface LoginResponse {
 @Injectable({
   providedIn: 'root',
 })
-export class AuthService {
+export class AdminAuthService {
 
   private readonly apiUrl =
     'http://localhost:8081/api/auth';
 
   constructor(
-    private readonly http: HttpClient
+    private readonly http:
+      HttpClient
   ) {}
-
-  registerClient(
-    request: RegisterClientRequest
-  ): Observable<RegisterClientResponse> {
-
-    return this.http.post<
-      RegisterClientResponse
-    >(
-      `${this.apiUrl}/register`,
-      request,
-      {
-        withCredentials: true,
-      }
-    );
-  }
 
   login(
     request: LoginRequest
   ): Observable<LoginResponse> {
 
-    return this.http.post<LoginResponse>(
+    return this.http.post<
+      LoginResponse
+    >(
       `${this.apiUrl}/login`,
       request,
       {
@@ -92,9 +58,12 @@ export class AuthService {
     );
   }
 
-  me(): Observable<LoginResponse> {
+  me():
+    Observable<LoginResponse> {
 
-    return this.http.get<LoginResponse>(
+    return this.http.get<
+      LoginResponse
+    >(
       `${this.apiUrl}/me`,
       {
         withCredentials: true,
@@ -102,7 +71,8 @@ export class AuthService {
     );
   }
 
-  logout(): Observable<void> {
+  logout():
+    Observable<void> {
 
     return this.http.post<void>(
       `${this.apiUrl}/logout`,

@@ -34,12 +34,13 @@ public class AuthService {
     }
 
     /*
-     * INSCRIPTION D'UN CLIENT
+     * INSCRIPTION CLIENT
      */
     @Transactional
     public RegisterClientResponse registerClient(
             RegisterClientRequest request
     ) {
+
         String email = request.email()
                 .trim()
                 .toLowerCase(Locale.ROOT);
@@ -51,6 +52,7 @@ public class AuthService {
                 clientRepository.existsByEmailIgnoreCase(email);
 
         if (userExiste || clientExiste) {
+
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Un compte existe déjà avec cette adresse e-mail"
@@ -58,7 +60,7 @@ public class AuthService {
         }
 
         /*
-         * Création du compte utilisateur.
+         * Création du compte utilisateur
          */
         User user = new User();
 
@@ -85,7 +87,7 @@ public class AuthService {
                 userRepository.save(user);
 
         /*
-         * Création automatique de la fiche client.
+         * Création de la fiche client
          */
         Client client = new Client();
 
@@ -125,16 +127,15 @@ public class AuthService {
     /*
      * CONNEXION
      */
+    @Transactional
     public LoginResponse login(
             LoginRequest request
     ) {
+
         String email = request.email()
                 .trim()
                 .toLowerCase(Locale.ROOT);
 
-        /*
-         * Rechercher l'utilisateur par son e-mail.
-         */
         User user = userRepository
                 .findByEmailIgnoreCase(email)
                 .orElseThrow(
@@ -145,25 +146,67 @@ public class AuthService {
                 );
 
         /*
-         * Vérifier que le compte est actif.
+         * Vérifier que le compte est actif
          */
         if (!user.isActif()) {
+
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "Ce compte est désactivé"
             );
         }
 
+        String motDePasseStocke =
+                user.getMotDePasse();
+
+        boolean motDePasseCorrect = false;
+
         /*
-         * Vérifier le mot de passe.
+         * Nouveau format sécurisé PBKDF2
          */
-        boolean motDePasseCorrect =
-                passwordService.matches(
-                        request.motDePasse(),
-                        user.getMotDePasse()
+        if (
+                motDePasseStocke != null &&
+                motDePasseStocke.startsWith("pbkdf2$")
+        ) {
+
+            motDePasseCorrect =
+                    passwordService.matches(
+                            request.motDePasse(),
+                            motDePasseStocke
+                    );
+
+        } else {
+
+            /*
+             * Compatibilité avec les anciens comptes
+             * ADMIN / AGENT qui avaient encore
+             * un mot de passe en clair.
+             */
+            motDePasseCorrect =
+                    motDePasseStocke != null &&
+                    motDePasseStocke.equals(
+                            request.motDePasse()
+                    );
+
+            /*
+             * Si l'ancien mot de passe est correct,
+             * on le remplace immédiatement
+             * par une version hashée.
+             */
+            if (motDePasseCorrect) {
+
+                user.setMotDePasse(
+                        passwordService.hashPassword(
+                                request.motDePasse()
+                        )
                 );
 
+                userRepository.save(user);
+            }
+        }
+
         if (!motDePasseCorrect) {
+
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
                     "Adresse e-mail ou mot de passe incorrect"
@@ -171,12 +214,12 @@ public class AuthService {
         }
 
         /*
-         * Pour un CLIENT, retrouver automatiquement son clientId.
-         * Pour ADMIN ou AGENT, clientId reste null.
+         * clientId uniquement pour CLIENT.
          */
         Long clientId = null;
 
         if (user.getRole() == Role.CLIENT) {
+
             clientId = clientRepository
                     .findByEmailIgnoreCase(email)
                     .map(Client::getId)

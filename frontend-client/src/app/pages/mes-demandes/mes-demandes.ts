@@ -65,6 +65,7 @@ export class MesDemandes implements OnInit {
         user.role !== 'CLIENT' ||
         !user.clientId
       ) {
+
         localStorage.removeItem(
           'clientflow_user'
         );
@@ -96,16 +97,17 @@ export class MesDemandes implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
+    const clientId =
+      Number(this.user.clientId);
+
     this.demandeService
-      .getDemandesClient(
-        this.user.clientId
-      )
+      .getDemandesClient(clientId)
       .subscribe({
 
         next: (demandes) => {
 
           this.demandes =
-            demandes.sort(
+            [...demandes].sort(
               (a, b) => {
 
                 const dateA =
@@ -131,10 +133,18 @@ export class MesDemandes implements OnInit {
           this.isLoading = false;
         },
 
-        error: () => {
+        error: (error) => {
+
+          console.error(
+            'Erreur chargement des demandes :',
+            error
+          );
 
           this.errorMessage =
             'Impossible de charger vos demandes.';
+
+          this.demandes = [];
+          this.demandesFiltrees = [];
 
           this.isLoading = false;
         },
@@ -195,6 +205,7 @@ export class MesDemandes implements OnInit {
   }
 
   get nouvelles(): number {
+
     return this.compterStatut(
       'NOUVELLE'
     );
@@ -213,6 +224,7 @@ export class MesDemandes implements OnInit {
   }
 
   get resolues(): number {
+
     return this.compterStatut(
       'RESOLUE'
     );

@@ -1,0 +1,499 @@
+:host {
+  display: block;
+}
+
+.powerbi-page {
+  width: 100%;
+  padding-bottom: 30px;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  padding: 30px 34px;
+
+  margin-bottom: 24px;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #5b2db8 0%,
+      #7046d6 55%,
+      #8557e8 100%
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 12px 30px
+    rgba(91, 45, 184, 0.15);
+}
+
+.hero-label {
+  margin: 0 0 7px;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 0.09em;
+
+  color:
+    rgba(255, 255, 255, 0.78);
+}
+
+.hero-section h1 {
+  margin: 0;
+
+  font-size: 30px;
+  font-weight: 700;
+
+  color: #ffffff;
+}
+
+.hero-description {
+  max-width: 700px;
+
+  margin: 9px 0 0;
+
+  color:
+    rgba(255, 255, 255, 0.82);
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.hero-icon {
+  width: 72px;
+  height: 72px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 18px;
+
+  background:
+    rgba(255, 255, 255, 0.15);
+
+  font-size: 34px;
+}
+
+
+/* =========================
+   INFO CARDS
+========================= */
+
+.info-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 18px;
+
+  margin-bottom: 24px;
+}
+
+.info-card {
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 19px 20px;
+
+  border:
+    1px solid #e8ebf1;
+
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 4px 16px
+    rgba(30, 41, 59, 0.04);
+}
+
+.info-icon {
+  width: 45px;
+  height: 45px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 12px;
+
+  background: #f0ebff;
+
+  color: #6842c2;
+
+  font-size: 21px;
+}
+
+.info-card span {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #8992a2;
+
+  font-size: 11px;
+}
+
+.info-card strong {
+  color: #202938;
+
+  font-size: 14px;
+}
+
+
+/* =========================
+   REPORT CARD
+========================= */
+
+.report-card {
+  overflow: hidden;
+
+  margin-bottom: 22px;
+
+  border:
+    1px solid #e8ebf1;
+
+  border-radius: 17px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 5px 20px
+    rgba(30, 41, 59, 0.05);
+}
+
+.report-header {
+  display: flex;
+  align-items: center;
+
+  gap: 17px;
+
+  padding: 23px 26px;
+
+  border-bottom:
+    1px solid #edf0f4;
+}
+
+.report-logo {
+  width: 53px;
+  height: 53px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #6842c2,
+      #8254df
+    );
+
+  color: #ffffff;
+
+  font-size: 25px;
+}
+
+.section-label {
+  margin: 0 0 4px;
+
+  color: #6842c2;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+}
+
+.report-header h2 {
+  margin: 0;
+
+  color: #202938;
+
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.report-header p:last-child {
+  margin: 5px 0 0;
+
+  color: #8791a2;
+
+  font-size: 12px;
+}
+
+
+/* =========================
+   REPORT CONTENT
+========================= */
+
+.report-content {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.5fr)
+    minmax(280px, 0.7fr);
+
+  gap: 25px;
+
+  padding: 26px;
+}
+
+.report-features {
+  display: flex;
+  flex-direction: column;
+
+  gap: 13px;
+
+  padding: 5px 0;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  color: #4c5565;
+
+  font-size: 13px;
+}
+
+.feature-item i {
+  width: 24px;
+  height: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #eaf8f1;
+
+  color: #067647;
+
+  font-size: 13px;
+}
+
+
+/* =========================
+   DOWNLOAD PANEL
+========================= */
+
+.download-panel {
+  padding: 24px;
+
+  border:
+    1px solid #e6e0f6;
+
+  border-radius: 15px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #faf8ff,
+      #f4f0ff
+    );
+
+  text-align: center;
+}
+
+.file-icon {
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin:
+    0 auto 13px;
+
+  border-radius: 15px;
+
+  background: #6842c2;
+
+  color: #ffffff;
+
+  font-size: 27px;
+}
+
+.download-panel h3 {
+  margin: 0 0 7px;
+
+  color: #252c39;
+
+  font-size: 14px;
+}
+
+.download-panel p {
+  margin:
+    0 auto 18px;
+
+  color: #8a93a2;
+
+  font-size: 11px;
+
+  line-height: 1.5;
+}
+
+.download-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  width: 100%;
+
+  padding: 11px 15px;
+
+  border-radius: 9px;
+
+  background: #6842c2;
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-size: 12px;
+  font-weight: 650;
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.download-button:hover {
+  color: #ffffff;
+
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 7px 18px
+    rgba(104, 66, 194, 0.2);
+}
+
+
+/* =========================
+   REFRESH INFO
+========================= */
+
+.refresh-card {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 15px;
+
+  padding: 20px 22px;
+
+  border:
+    1px solid #dce8f8;
+
+  border-radius: 14px;
+
+  background: #f6f9ff;
+}
+
+.refresh-icon {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 11px;
+
+  background: #e6f0ff;
+
+  color: #175cd3;
+
+  font-size: 20px;
+}
+
+.refresh-card h3 {
+  margin: 0 0 5px;
+
+  color: #273142;
+
+  font-size: 14px;
+}
+
+.refresh-card p {
+  margin: 0;
+
+  max-width: 850px;
+
+  color: #778191;
+
+  font-size: 12px;
+
+  line-height: 1.6;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 991px) {
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+
+  .hero-section {
+    align-items: flex-start;
+
+    padding: 24px;
+
+    flex-direction: column;
+  }
+
+  .hero-section h1 {
+    font-size: 25px;
+  }
+
+  .report-content {
+    padding: 20px;
+  }
+}

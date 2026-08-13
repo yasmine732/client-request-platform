@@ -20,6 +20,7 @@ export interface NavigationItem {
 }
 
 export const NavigationItems: NavigationItem[] = [
+
   {
     id: 'dashboard-group',
     title: 'Tableau de bord',
@@ -76,5 +77,25 @@ export const NavigationItems: NavigationItem[] = [
         breadcrumbs: false
       }
     ]
+  },
+
+  {
+    id: 'analyse-group',
+    title: 'Analyse',
+    type: 'group',
+    icon: 'icon-navigation',
+
+    children: [
+      {
+        id: 'powerbi',
+        title: 'Power BI',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/powerbi',
+        icon: 'ti ti-chart-bar',
+        breadcrumbs: false
+      }
+    ]
   }
+
 ];

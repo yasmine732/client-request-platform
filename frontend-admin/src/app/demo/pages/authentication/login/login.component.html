@@ -1,80 +1,291 @@
 <div class="auth-main">
+
   <div class="auth-wrapper v3">
+
     <div class="auth-form">
-      <div class="card auth-card my-5">
+
+      <div
+        class="card auth-card my-5"
+      >
+
         <div class="card-body">
-          <form (ngSubmit)="onSubmit($event)">
-            <a href="javascript:void(0)" class="d-flex justify-content-center">
-              <img src="assets/images/logo-dark.svg" alt="logo" />
-            </a>
+
+          <form
+            [formGroup]="loginForm"
+            (ngSubmit)="onSubmit()"
+            novalidate
+          >
+
+            <!-- Logo -->
+            <div
+              class="d-flex justify-content-center mb-4"
+            >
+
+              <img
+                src="assets/images/clientflow-logo.png"
+                alt="ClientFlow"
+                style="
+                  max-width: 190px;
+                  max-height: 70px;
+                  object-fit: contain;
+                "
+              />
+
+            </div>
+
+            <!-- Titre -->
             <div class="row">
-              <div class="d-flex justify-content-center">
-                <div class="auth-header">
-                  <h2 class="text-secondary mt-5"><b>Hi, Welcome Back</b></h2>
-                  <p class="f-16 mt-2">Enter your credentials to continue</p>
+
+              <div
+                class="d-flex justify-content-center"
+              >
+
+                <div
+                  class="auth-header text-center"
+                >
+
+                  <h2
+                    class="text-secondary mt-3"
+                  >
+                    <b>
+                      Espace administration
+                    </b>
+                  </h2>
+
+                  <p
+                    class="f-16 mt-2"
+                  >
+                    Connectez-vous avec votre compte
+                    administrateur ou agent.
+                  </p>
+
                 </div>
+
               </div>
+
             </div>
-            <div class="d-grid">
-              <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted">
-                <img src="assets/images/authentication/google-icon.svg" alt="google" />
-                Sign In With Google
-              </button>
-            </div>
-            <div class="saprator mt-3">
-              <span>or</span>
-            </div>
-            <h5 class="my-4 d-flex justify-content-center">Sign in with Email address</h5>
-            <div class="form-floating mb-3">
-              <input type="email" class="form-control" id="floatingInput"
-                [class.is-invalid]="submitted() && loginForm.email().invalid()" placeholder="Email Address"
-                [formField]="loginForm.email" />
-              <label for="floatingInput">Email address / Username</label>
-              @if (submitted() && loginForm.email().invalid()) {
-              <div class="invalid-feedback">
-                @for (error of loginForm.email().errors(); track error.kind) {
-                <div>{{ error.message }}</div>
-                }
+
+            <!-- Succès -->
+            @if (successMessage) {
+
+              <div
+                class="alert alert-success"
+                role="alert"
+              >
+                {{ successMessage }}
               </div>
-              }
-            </div>
-            <div class="form-floating mb-3">
-              <input type="password" id="password" class="form-control" [formField]="loginForm.password"
-                [class.is-invalid]="submitted() && loginForm.password().errors().length > 0"
-                placeholder="Password (min. 8 characters)" />
-              <label for="password">Password</label>
-              @if (submitted() && loginForm.password().errors().length > 0) {
-              <div class="invalid-feedback">
-                @for (error of loginForm.password().errors(); track error.kind) {
-                <div>{{ error.message }}</div>
-                }
-              </div>
-              }
-            </div>
-            <div class="d-flex mt-1 justify-content-between">
-              <div class="form-check">
-                <input class="form-check-input input-primary" type="checkbox" id="customCheckc1" checked />
-                <label class="form-check-label text-muted" for="customCheckc1">Remember me</label>
-              </div>
-              <h5 class="text-secondary">
-                <a href="javascript:void(0)">Forgot Password?</a>
-              </h5>
-            </div>
-            @if (error()) {
-            <div class="alert alert-danger" role="alert">
-              {{ error() }}
-            </div>
+
             }
-            <div class="d-grid mt-4">
-              <button type="submit" class="btn btn-secondary">Sign In</button>
+
+            <!-- Erreur -->
+            @if (errorMessage) {
+
+              <div
+                class="alert alert-danger"
+                role="alert"
+              >
+                {{ errorMessage }}
+              </div>
+
+            }
+
+            <!-- Email -->
+            <div
+              class="form-floating mb-3"
+            >
+
+              <input
+                type="email"
+                id="email"
+                class="form-control"
+                formControlName="email"
+                autocomplete="email"
+                placeholder="Adresse e-mail"
+                [class.is-invalid]="
+                  email?.invalid &&
+                  (email?.touched || submitted)
+                "
+              />
+
+              <label for="email">
+                Adresse e-mail
+              </label>
+
+              @if (
+                email?.invalid &&
+                (email?.touched || submitted)
+              ) {
+
+                <div
+                  class="invalid-feedback"
+                >
+
+                  @if (
+                    email?.hasError('required')
+                  ) {
+
+                    L’adresse e-mail est obligatoire.
+
+                  } @else if (
+                    email?.hasError('email')
+                  ) {
+
+                    Saisissez une adresse e-mail valide.
+
+                  }
+
+                </div>
+
+              }
+
             </div>
+
+            <!-- Mot de passe -->
+            <div
+              class="form-floating mb-2 position-relative"
+            >
+
+              <input
+                [type]="
+                  showPassword
+                    ? 'text'
+                    : 'password'
+                "
+                id="password"
+                class="form-control"
+                formControlName="password"
+                autocomplete="current-password"
+                placeholder="Mot de passe"
+                [class.is-invalid]="
+                  password?.invalid &&
+                  (
+                    password?.touched ||
+                    submitted
+                  )
+                "
+              />
+
+              <label for="password">
+                Mot de passe
+              </label>
+
+              @if (
+                password?.invalid &&
+                (
+                  password?.touched ||
+                  submitted
+                )
+              ) {
+
+                <div
+                  class="invalid-feedback"
+                >
+
+                  @if (
+                    password?.hasError(
+                      'required'
+                    )
+                  ) {
+
+                    Le mot de passe est obligatoire.
+
+                  } @else if (
+                    password?.hasError(
+                      'minlength'
+                    )
+                  ) {
+
+                    Le mot de passe doit contenir
+                    au moins 8 caractères.
+
+                  }
+
+                </div>
+
+              }
+
+            </div>
+
+            <!-- Afficher mot de passe -->
+            <div
+              class="d-flex justify-content-end mb-3"
+            >
+
+              <button
+                type="button"
+                class="btn btn-link p-0 text-secondary"
+                (click)="togglePassword()"
+              >
+
+                @if (showPassword) {
+                  Masquer le mot de passe
+                } @else {
+                  Afficher le mot de passe
+                }
+
+              </button>
+
+            </div>
+
+            <!-- Se souvenir -->
+            <div class="form-check mb-4">
+
+              <input
+                class="form-check-input input-primary"
+                type="checkbox"
+                id="rememberMe"
+                formControlName="rememberMe"
+              />
+
+              <label
+                class="form-check-label text-muted"
+                for="rememberMe"
+              >
+                Se souvenir de moi
+              </label>
+
+            </div>
+
+            <!-- Bouton -->
+            <div class="d-grid">
+
+              <button
+                type="submit"
+                class="btn btn-secondary"
+                [disabled]="isLoading"
+              >
+
+                @if (isLoading) {
+
+                  Connexion en cours...
+
+                } @else {
+
+                  Se connecter
+
+                }
+
+              </button>
+
+            </div>
+
             <hr />
-            <h5 class="d-flex justify-content-center">
-              <a [routerLink]="['/register']">Don't have an account?</a>
-            </h5>
+
+            <p
+              class="text-center text-muted mb-0"
+            >
+              Cet espace est réservé aux
+              administrateurs et aux agents ClientFlow.
+            </p>
+
           </form>
+
         </div>
+
       </div>
+
     </div>
+
   </div>
+
 </div>
